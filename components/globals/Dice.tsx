@@ -70,13 +70,13 @@ const Dice = forwardRef((props: TProps, ref: React.MutableRefObject<TDiceRef>) =
         handleDiceRoll();
     };
 
-    const clickHandler = () => {
-        if (!triggers?.length || !triggers.includes('click')) {
-            return;
-        }
+    // const clickHandler = () => {
+    //     if (!triggers?.length || !triggers.includes('click')) {
+    //         return;
+    //     }
 
-        handleDiceRoll();
-    };
+    //     handleDiceRoll();
+    // };
 
     useEffect(() => {
         if (typeof window === 'undefined' || !triggers?.length) {
@@ -113,7 +113,7 @@ const Dice = forwardRef((props: TProps, ref: React.MutableRefObject<TDiceRef>) =
     if (!faceArray?.length) return null;
 
     return (
-        <button disabled={disabled || rolling} onClick={clickHandler} style={buttonStyles} className={`_space3d ${valueClassMap[value]} ${rolling && 'rolling'}`}>
+        <button disabled={disabled || rolling} style={buttonStyles} className={`_space3d ${valueClassMap[value]} ${rolling && 'rolling'}`}>
             <div className="_3dbox">
                 <div {...faceArray[0]} />
                 <div {...faceArray[1]} />

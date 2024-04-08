@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card"
+import Link from 'next/link'
 
 const inter = DM_Sans({ subsets: ["latin"] });
 
@@ -30,10 +31,13 @@ export default function Home() {
           size={'lg'}
           className="p-6 md:p-8 absolute z-10 mt-64 mb-8 md:mb-0 md:text-2xl text-xl cursor-pointer  w-fit border-t-2 rounded-full border-[#4D4D4D] dark:bg-[#1F1F1F] hover:bg-white hover:text-black group transition-all flex items-center justify-center gap-4 hover:shadow-xl dark:hover:shadow-neutral-500 duration-500"
         >
-          <span className="dark:bg-clip-text  text- dark:text-transparent cursor-pointer  dark:bg-gradient-to-r from-neutral-500 to-neutral-600 hover:text-black   md:text-center font-sans dark:group-hover:bg-gradient-to-r dark:group-hover:from-black dark:group-hover:to-black">
-            Play Now
-          </span>
+          <Link href='/bet'>
+            <span className="dark:bg-clip-text  text- dark:text-transparent cursor-pointer  dark:bg-gradient-to-r from-neutral-500 to-neutral-600 hover:text-black   md:text-center font-sans dark:group-hover:bg-gradient-to-r dark:group-hover:from-black dark:group-hover:to-black">
+              Play Now
+            </span>
+          </Link>
         </Button>
+
       </div>
       <div className="md:mt-12">
         <h1 className="ml-4 text-white">Explore</h1>
