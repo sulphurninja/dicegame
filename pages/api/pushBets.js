@@ -2,10 +2,7 @@ import Users from '../../models/userModel';
 import { MongoClient } from 'mongodb';
 
 const uri = process.env.MONGODB_URL;
-const client = new MongoClient(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+const client = new MongoClient(uri, {});
 
 export default async function handler(req, res) {
   try {
@@ -14,7 +11,7 @@ export default async function handler(req, res) {
     const betsCollection = db.collection('bets');
     const fetchResultsCollection = db.collection('fetchResults');
 
-    const { numberBets, totalAmount, userName } = req.body;
+    const { numberBets, totalAmount, userName, winningNumber } = req.body;
 
     const user = await Users.findOne({ userName });
     if (!user) {
@@ -25,15 +22,14 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Insufficient balance' });
     }
 
-    // Get the current draw time
-    const currentDrawTime = new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+    // Get the current date
+    const currentDate = new Date();
 
-    // Fetch the winning number for the current draw time
-    const fetchResult = await fetchResultsCollection.findOne({ drawTime: currentDrawTime });
-    if (!fetchResult) {
-      return res.status(404).json({ error: 'Winning number not found for current draw time' });
-    }
-    const winningNumber = fetchResult.couponNum;
+    // Format the current draw time
+    const currentDrawTime = currentDate.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+    console.log(currentDrawTime, 'current draw time')
+
+   
 
     // Calculate winning amount
     let winningAmount = 0;
@@ -44,7 +40,7 @@ export default async function handler(req, res) {
     }
 
     // Insert bet into bets collection
-    const result = await betsCollection.insertOne({ numberBets, totalAmount, userName, createdAt: new Date() });
+    const result = await betsCollection.insertOne({ numberBets, totalAmount, userName, createdAt: currentDate });
 
     // Deduct totalAmount from user balance
     user.balance -= totalAmount;

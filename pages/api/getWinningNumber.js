@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb';
 export default async function handler(req, res) {
   // Set up the connection URL and database name
   const uri = process.env.MONGODB_URL;
-  const client = new MongoClient(uri, { useUnifiedTopology: true });
+  const client = new MongoClient(uri, {  });
   const dbName = 'test';
 
   // Connect to the database

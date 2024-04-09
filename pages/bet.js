@@ -9,6 +9,8 @@ import Buttons from '../components/globals/Buttons';
 import { DataContext } from '../store/GlobalState';
 import { Dice6, Users, User, Wallet } from 'lucide-react'
 import axios from 'axios'
+import { Toaster } from '../components/ui/sonner';
+import { toast } from 'sonner';
 
 const inter = DM_Sans({ subsets: ["latin"] });
 
@@ -51,9 +53,12 @@ export default function Bet() {
     const seconds = timeDiff % 60;
     const timeToDraw = `${seconds.toString().padStart(2, "0")}`;
     const [selectedAmount, setSelectedAmount] = useState(0);
-    const [winningAmount, setWinningAmount] = useState(0);
+    const [winningAmounts, setWinningAmounts] = useState([]);
     const [winningNumber, setWinningNumber] = useState();
     const [numberBets, setNumberBets] = useState({});
+    const [betSuccessMessage, setBetSuccessMessage] = useState(""); // State variable for bet success message
+    const [pushedBets, setPushedBets] = useState([]);// State variable to store pushed bet
+    const [pushedBetsArray, setPushedBetsArray] = useState([]);
 
 
 
@@ -159,11 +164,15 @@ export default function Bet() {
                 if (balance < totalAmount) {
                     alert('Insufficient Balance!!')
                 } else {
-                    const response = await axios.post('/api/pushBets', { numberBets, totalAmount, userName });
+                    const response = await axios.post('/api/pushBets', { numberBets, totalAmount, userName, winningNumber });
                     if (response.data.success) {
-                        setWinningAmount(response.data.winningAmount);
+                        setWinningAmounts(prevWinningAmounts => [...prevWinningAmounts, response.data.winningAmount]); // Store winning amount in array
                         console.log('WINNING AMOUNT', response.data.winningAmount);
                         clearBets();
+                        setPushedBets(prevPushedBets => [...prevPushedBets, numberBets]); // Update pushed bets as an array
+                        toast("✅ Bet Placed successfully!"); // Update success message
+                        setPushedBetsArray(prev => [...prev, pushedBets]); // Add the newly pushed bets to the array
+
                     }
                     console.log('Bets published successfully!');
                     clearBets();
@@ -180,7 +189,13 @@ export default function Bet() {
 
     const addWinnings = async () => {
         try {
-            const response = await axios.post('/api/addWinnings', { winningAmount, userName });
+            const response = await axios.post('/api/addWinnings', { winningAmounts, userName });
+            if (response.data.success) {
+                toast(`🏆 You Won + ${response.data.totalWinningAmount}`);
+                setWinningAmounts([]);
+                setPushedBets([]);
+                setPushedBetsArray([]);
+            }
         } catch (error) {
             console.error(error);
         }
@@ -220,10 +235,18 @@ export default function Bet() {
         }
     }, [landscapeMode]);
 
+    useEffect(() => {
+        // Clear the bet success message after 10 seconds only if it is received from pushBets
+        if (betSuccessMessage) {
+            const timer = setTimeout(() => {
+                setBetSuccessMessage("");
+            }, 10000);
 
- 
+            return () => clearTimeout(timer); // Clear the timeout on component unmount
+        }
+    }, [betSuccessMessage]);
 
-
+    console.log(pushedBetsArray, 'pushed bets array')
 
     return (
         <div className="h-screen w-full absolute  overflow-hidden" style={{ backgroundImage: 'url(/felt.png),', backgroundSize: 'cover' }}>
@@ -237,7 +260,7 @@ export default function Bet() {
 
 
             <main className={' w-full absolute h-screen overflow-hidden'}>
-               
+
 
                 <div className='flex justify-center'>
                     {/* <img src='/images/ribbon.png' className='mt-1' /> */}
@@ -307,6 +330,33 @@ export default function Bet() {
                         <h1 className='text-white text-sm'>
                             CLEAR BET
                         </h1>
+
+                    </div>
+
+                    <Toaster />
+
+                    <div onClick={clearBets} className='bg-[#B33659] shadow-white  -700  px-2  ml-80  absolute mt-20 h-16 overflow-hidden  text-center   rounded-lg'>
+                        <h2 className='font-bold text-white  text-xs'> Current Bet:</h2>
+
+                        {/* <h1 className='text-xs font-bold  text-white'>Current Bet</h1> */}
+
+                        {pushedBets.map((bet, index) => (
+                            <div key={index} className='w-56 overflow-x-scroll'>
+                                <div className='text-white gap-4 justify-center flex'>
+                                    {Object.entries(bet).map(([number, amount]) => (
+                                        <p className='text-xs gap-4 font-bold font-mono' key={number}>
+                                            <div className='bg-white text-black h-6 w-8 mt-1 rounded-full'>
+                                                <span className='text-sm'>{number}</span>
+                                            </div>
+                                            <div className='flex'>
+                                                🪙
+                                                <span className='text-green-200'>{amount}</span>
+                                            </div>
+                                        </p>
+                                    ))}
+                                </div>
+                            </div>
+                        ))}
 
                     </div>
                     <div onClick={handlePlaceBets} className='bg-green-200 text-white p-2 w-fit absolute ml-[76%] mt-20   rounded-lg'>
