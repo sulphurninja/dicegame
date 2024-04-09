@@ -1,10 +1,30 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { FiHome, FiCheckSquare, FiBookOpen, FiTrendingUp, FiMessageSquare, FiHelpCircle, FiCalendar, FiUsers, FiFile, FiFileText, FiGitPullRequest, FiPhoneOutgoing, FiNavigation2, FiSettings, FiMinusCircle } from 'react-icons/fi';
 import { IoIosNotifications } from "react-icons/io";
 import Link from 'next/link'
 import Navbar from '../components/globals/Navbar'
+import { DataContext } from '../store/GlobalState';
+import { MdCancel } from "react-icons/md";
+import Cookie from 'js-cookie'
 
 export default function Admin() {
+    const { state, dispatch } = useContext(DataContext);
+    const { auth } = state;
+    const handleLogout = () => {
+        Cookie.remove('refreshtoken', { path: '/api/auth/refreshToken' })
+        localStorage.removeItem('firstLogin')
+        dispatch({ type: 'AUTH', payload: {} })
+        window.location.href = '/';
+    }
+
+
+    if (!auth || !auth.user || auth.user.role !== 'admin') {
+        return <div className="min-h-screen flex items-center text-xl justify-center font-bold text-red-500">
+            <MdCancel className='text-xl' /> Not authorized, Contact Admin!
+        </div>;
+    }
+
+
     return (
         <>
             {/* <Navbar/> */}
@@ -65,15 +85,15 @@ export default function Admin() {
                     <header className="flex items-center justify-between mb-6">
                         <div className='w-[15%]  h-[10%]'>
                             {/* <h1 className='font-bold'>Dice - Admin</h1> */}
-                        <img src='/dice.gif' className='h-8' />
+                            <img src='/dice.gif' className='h-8' />
 
                         </div>
-                        
+
                         <h1 className="text-lg font-bold text-black font-sans">Hello Admin!</h1>
 
                         <button
                             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded"
-                        // onClick={handleLogoutClick}
+                        onClick={handleLogout}
                         >
                             Logout
                         </button>

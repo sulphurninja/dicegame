@@ -46,8 +46,10 @@ export default function Login() {
 
         localStorage.setItem('firstLogin', true)
         // check if user has admin privileges
-        if (res.user) {
-            router.push("/home");
+        if (res.user && res.user.role === 'admin') {
+            router.push("/admin"); // Redirect to admin page
+        } else {
+            router.push("/home"); // Redirect to home page or any other page
         }
     }
 
