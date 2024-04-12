@@ -63,22 +63,28 @@ export default function Home() {
         </div>
       </div>
       <nav className="fixed bottom-0 left-0 w-full bg-[#] text-white flex justify-center">
-        <ul className="flex justify-around w-full max-w-screen-lg py-4">
-          <li className={`px-4 items-center  ${inter.className} `}>
-            <Dice6 className='text-white ml-2' />
-            <h1 className="text-center">Game</h1>
-          </li>
-          <li className={`px-4 items-center  ${inter.className} `}>
-            <Users className='text-white ml-2' />
-            <h1 className="text-center">Refer</h1>
-          </li>
-          <li className={`px-4 items-center  ${inter.className} `}>
-            <User className='text-white ml-2' />
-            <h1 className="text-center">Profile</h1>
-          </li>
-          {/* Add more navigation items as needed */}
-        </ul>
-      </nav>
+                <ul className="flex justify-around w-full max-w-screen-lg py-4">
+                    <Link href='/home'>
+                        <li className={`px-4 items-center  ${inter.className} `}>
+                            <Dice6 className='text-white ml-2' />
+                            <h1 className="text-center">Game</h1>
+                        </li>
+                    </Link>
+                    <Link href='/refer'>
+                        <li className={`px-4 items-center  ${inter.className} `}>
+                            <Users className='text-white ml-2' />
+                            <h1 className="text-center">Refer</h1>
+                        </li>
+                    </Link>
+                    <Link href='/profile'>
+                        <li className={`px-4 items-center  ${inter.className} `}>
+                            <User className='text-white ml-2' />
+                            <h1 className="text-center">Profile</h1>
+                        </li>
+                    </Link>
+                    {/* Add more navigation items as needed */}
+                </ul>
+            </nav>
 
     </main>
   );

@@ -1,19 +1,41 @@
 'use client'
-import React from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Wallet } from 'lucide-react'
+import { DataContext } from '../../store/GlobalState';
 
 
 export default function Navbar() {
+    const { state, dispatch } = useContext(DataContext);
+    const { auth } = state
+    const [balance, setBalance] = useState(0)
+
+    useEffect(() => {
+        const fetchBalance = async () => {
+            try {
+                const response = await axios.get(`/api/updateBalance?userName=${auth.user.userName}`);
+                const updatedBalance = response.data.balance;
+                setBalance(updatedBalance);
+            } catch (error) {
+                console.error('Error fetching balance:', error);
+            }
+        };
+
+
+
+        const interval = setInterval(fetchBalance, 1000); // Fetch balance every 3 seconds
+        return () => clearInterval(interval);
+    }, [auth]);
+
     return (
         <header className='fixed top-0 left-0 right-0 py-4 px-4 bg- dark:bg-black/40 backdrop-blur-lg z-[100] flex items-center border-b-[1px] border-neutral-900 justify-between '>
             <h1 className='font-bold text-xl text-white'>Dice🎲</h1>
             <div className=''>
-            <div className='rounded-xl gap-4 px-4 p-1 flex justify-between border   '>
-                <div>
-                    <Wallet className='text-white' />
+                <div className='rounded-xl gap-4 px-4 p-1 flex justify-between border   '>
+                    <div>
+                        <Wallet className='text-white' />
+                    </div>
+                    <h1 className='text-white ml-auto'>{balance}</h1>
                 </div>
-                <h1 className='text-white ml-auto'>0.0</h1>
-            </div>
             </div>
         </header>
     )

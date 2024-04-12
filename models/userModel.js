@@ -5,8 +5,8 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    balance:{
-        type:Number,
+    balance: {
+        type: Number,
         default: 0,
     },
     password: {
@@ -24,7 +24,29 @@ const userSchema = new mongoose.Schema({
     root: {
         type: Boolean,
         default: false
-    }
+    },
+    referralCode: {
+        type: String,
+        unique: true
+    },
+    referralWinnings: {
+        type: Number,
+        default: 0
+    },
+    parent: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user'
+    },
+    winHistory: [{
+        from: {
+            type: String,
+            required: true
+        },
+        amount: {
+            type: Number,
+            required: true
+        }
+    }]
 })
 
 let Dataset = mongoose.models.user || mongoose.model('user', userSchema)

@@ -31,10 +31,15 @@ const login = async (req, res) => {
             msg: "Login Successful!!",
             refresh_token,
             access_token,
-            user:{
+            user: {
                 userName: user.userName,
+                balance: user.balance,
+                name: user.name,
                 role: user.role,
-                root: user.root
+                root: user.root,
+                referralCode: user.referralCode,
+                winHistory: user.winHistory,
+                referralWinnings: user.referralWinnings,
             }
         })
 

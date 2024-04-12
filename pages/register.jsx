@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { DM_Sans } from 'next/font/google';
 import { useForm } from 'react-hook-form';
 import { DataContext } from '../store/GlobalState';
@@ -8,13 +8,23 @@ import { postData } from '../utils/fetchData';
 const inter = DM_Sans({ subsets: ['latin'] });
 
 export default function Register() {
-    const initialState = { userName: '', password: '', name: '' }
+    const initialState = { userName: '', password: '', name: '', referralCode: '' }
     const [userData, setUserData] = useState(initialState)
-    const { userName, password, name } = userData
+    const { userName, password, name, referralCode } = userData
     const { state, dispatch } = useContext(DataContext)
     const [showModal, setShowModal] = useState(false)
     const router = useRouter();
 
+    useEffect(() => {
+        // Extract referral code from URL query parameters
+        const { referralCode } = router.query;
+        if (referralCode) {
+            setUserData(prevState => ({
+                ...prevState,
+                referralCode: referralCode
+            }));
+        }
+    }, [router.query]);
 
     const handleChangeInput = e => {
         const { name, value } = e.target
@@ -24,17 +34,15 @@ export default function Register() {
         e.preventDefault()
 
         const res = await postData('auth/register', userData)
-        // If registration is successful, make a client-side fetch request
         if (res.msg === 'Successful Registration!') {
             await fetch('/api/generateUserJson', {
                 method: 'GET',
             });
-            router.push('/home')
-            console.log('JSON files generated successfully.');
+            router.push('/login')
+            // console.log('JSON files generated successfully.');
         }
         setShowModal(true);
         console.log(res)
-
     }
     return (
         <main className={`min-h-screen bg-[#102815] wow ${inter.className}`}>
@@ -60,6 +68,11 @@ export default function Register() {
                     <div className="flex flex-col text-white">
                         <label className="">Password</label>
                         <input type="password" name='password' id="password" value={password} onChange={handleChangeInput} placeholder='******' className="border rounded-md p-1 px-4 text-black " />
+                    </div>
+
+                    <div className="flex flex-col text-white">
+                        <label className="">Referral Code (if any)</label>
+                        <input type="text" name='referralCode' id="referralCode" value={referralCode} onChange={handleChangeInput} placeholder='Enter referral code here' className="border rounded-md p-1 px-4 text-black " />
                     </div>
 
                     <div className='flex justify-center '>
