@@ -113,8 +113,8 @@ const Dice = forwardRef((props: TProps, ref: React.MutableRefObject<TDiceRef>) =
     if (!faceArray?.length) return null;
 
     return (
-        <button disabled={disabled || rolling} style={buttonStyles} className={`_space3d ${valueClassMap[value]} ${rolling && 'rolling'}`}>
-            <div className="_3dbox">
+        <button disabled={disabled || rolling} style={buttonStyles} className={`_space3d  ${valueClassMap[value]} ${rolling && 'rolling'}`}>
+            <div className="_3dbox  ">
                 <div {...faceArray[0]} />
                 <div {...faceArray[1]} />
                 <div {...faceArray[2]} />

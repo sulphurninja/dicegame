@@ -4,6 +4,7 @@ import TimeRight from "../components/globals/Timer";
 import Dice from "../components/globals/Dice";
 import { DM_Sans } from "next/font/google";
 import Cookies from 'js-cookie';
+import { Howl } from 'howler';
 import { useRouter } from 'next/router';
 import Buttons from '../components/globals/Buttons';
 import { DataContext } from '../store/GlobalState';
@@ -11,6 +12,8 @@ import { Dice6, Users, User, Wallet } from 'lucide-react'
 import axios from 'axios'
 import { Toaster } from '../components/ui/sonner';
 import { toast } from 'sonner';
+import { Button } from '../components/ui/button'
+import { motion } from 'framer-motion'
 
 const inter = DM_Sans({ subsets: ["latin"] });
 
@@ -21,12 +24,7 @@ export default function Bet() {
     const { state, dispatch } = useContext(DataContext);
     const { auth } = state
 
-    const handleLogout = () => {
-        Cookies.remove('refreshtoken', { path: '/api/auth/refreshToken' });
-        localStorage.removeItem('firstLogin');
-        dispatch({ type: 'AUTH', payload: {} });
-        router.push('/');
-    };
+ 
 
     const [time, setTime] = useState(new Date());
     const [balance, setBalance] = useState(0);
@@ -59,7 +57,7 @@ export default function Bet() {
     const [betSuccessMessage, setBetSuccessMessage] = useState(""); // State variable for bet success message
     const [pushedBets, setPushedBets] = useState([]);// State variable to store pushed bet
     const [pushedBetsArray, setPushedBetsArray] = useState([]);
-
+    const [showWinningModal, setShowWinningModal] = useState(false); // State to manage modal visibility
 
 
     nextToDraw.setMinutes(nextToDraw.getMinutes() + 1);
@@ -79,6 +77,8 @@ export default function Bet() {
         if (timeToDraw === "00") {
             diceRef.current.rollDice();
             addWinnings();
+        } else if (timeToDraw === "58") {
+            setShowWinningModal(true);
         }
     }, [timeToDraw]);
 
@@ -132,6 +132,15 @@ export default function Bet() {
             imageAmounts[number] = (imageAmounts[number] || 0) + amount;
         }
     });
+
+    const buttonClickSound3 = new Howl({
+        src: ['/select.mp3'],
+    });
+
+    const buttonClickSound = new Howl({
+        src: ['/clear.mp3'],
+    });
+
     const [index, setIndex] = useState(0);
 
     const [totalAmount, setTotalAmount] = useState(0);
@@ -202,21 +211,21 @@ export default function Bet() {
     }
 
     useEffect(() => {
-        async function fetchWinningNumber() {
-            try {
-                const response = await axios.get(`/api/getWinningNumber?drawTime=${drawTime}`);
-                setWinningNumber(response.data.couponNum);
-                console.log("Winning Number is:", response.data.couponNum)
+        if (timeToDraw === "05") { // Fetch winning number only when timeToDraw is 5
+            async function fetchWinningNumber() {
+                try {
+                    const response = await axios.get(`/api/getWinningNumber?drawTime=${drawTime}`);
+                    setWinningNumber(response.data.couponNum);
+                    console.log("Winning Number is:", response.data.couponNum)
 
-            } catch (error) {
-                console.log('Error fetching winning number:', error);
-                return null;
+                } catch (error) {
+                    console.log('Error fetching winning number:', error);
+                    return null;
+                }
             }
+            fetchWinningNumber();
         }
-        fetchWinningNumber();
-        console.log(winningNumber, drawTime, "WINNINGNUMBER AND DRAWTIME")
     }, [timeToDraw]);
-
 
 
     useEffect(() => {
@@ -231,7 +240,7 @@ export default function Bet() {
 
     useEffect(() => {
         if (!landscapeMode) {
-            alert("To play the game, please switch to Landscape mode.");
+            // alert("To play the game, please switch to Landscape mode.");
         }
     }, [landscapeMode]);
 
@@ -247,6 +256,22 @@ export default function Bet() {
     }, [betSuccessMessage]);
 
     console.log(pushedBetsArray, 'pushed bets array')
+
+    // Function to close the winning modal
+    useEffect(() => {
+        const handleCloseModal = () => {
+            if (timeToDraw === "50") {
+                setShowWinningModal(false);
+            }
+        };
+        handleCloseModal();
+    }, [timeToDraw]);
+
+    const handleCloseModal = () => {
+        setShowWinningModal(false);
+    }
+
+
 
     return (
         <div className="h-screen w-full absolute  overflow-hidden" style={{ backgroundImage: 'url(/felt.png),', backgroundSize: 'cover' }}>
@@ -271,8 +296,33 @@ export default function Bet() {
 
                 <TimeRight />
 
+                {showWinningModal && (
+                    <motion.div
+                        className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50"
+                        initial={{ opacity: 0, scale: 0.5 }} // Initial animation properties
+                        animate={{ opacity: 1, scale: 1 }} // Animation properties on appearance
+                        transition={{ duration: 0.5 }} // Animation duration
+                    >
+                        <motion.div
+                            className="bg-black  shadow-[0_3px_10px_rgb(0,0,0,0.2)] shadow-white  p-16   z-[100] rounded-lg"
+                            initial={{ opacity: 0, y: -50 }} // Initial animation properties
+                            animate={{ opacity: 1, y: 0 }} // Animation properties on appearance
+                            transition={{ delay: 0.2, duration: 0.5 }} // Animation duration and delay
+                        >
+                            <h2 className="text-4xl font-bold text-white  text-center">Winning Number</h2>
+                            <div className='flex mt-2 gap-2 justify-center'>
+                                <img src='/win.gif' className='h-12   mt-2' />
+                                <h1 className="text-6xl font-bold mt-auto  text-center text-purple-100 -200">{winningNumber}</h1>
 
+                            </div>
+                            <div className='w-full flex justify-center'>
+                                <Button className="mt-4 bg-amber-600 text-white px-6 py-2 rounded-lg" onClick={handleCloseModal} >OK</Button>
+                            </div>
 
+                        </motion.div>
+                    </motion.div>
+                )}
+               
 
                 <div className='grid grid-cols-3 -mt-12'>
                     <div className='grid grid-cols-3  ml-6 -mt-12  '>
@@ -281,7 +331,7 @@ export default function Bet() {
                                 key={amount}
                                 className={`rounded-full w-16 h-16 p-2 ${selectedAmount === amount ? 'bg-white' : 'bg-transparent'
                                     }`}
-                                onClick={() => handleAmountClick(amount)}
+                                onClick={() => { buttonClickSound3.play(); handleAmountClick(amount) }}
                             >
                                 <img src={`/${amount}.png`} className="h-full w-full  rounded-full" alt={amount} />
                             </button>
@@ -302,7 +352,7 @@ export default function Bet() {
 
                             <div
                                 src={`/images/${number}.png`}
-                                className={` text-black bg-white p-2 w-1/2    ${number === index
+                                className={` text-black bg-white p-2 w-1/2 text-2xl    ${number === index
                                     ? "border rounded-2xl"
                                     : "rounded-2xl border"
                                     } `}
@@ -320,13 +370,16 @@ export default function Bet() {
                     <div>
 
                     </div>
-                    <div className='bg-white p-2 ml-auto w-fit absolute mt-20   rounded-lg'>
+                    <div className='bg-white p-2 ml-auto w-fit absolute mt-20    rounded-lg'>
                         <h1 className='text-black text-sm'>
                             TOTAL : {totalAmount}
                         </h1>
 
                     </div>
-                    <div onClick={clearBets} className='bg-red-700 p-2 ml-36 w-fit absolute mt-20   rounded-lg'>
+                    <div onClick={() => {
+                        buttonClickSound.play();
+                        clearBets();
+                    }} className='bg-red-700 p-2 ml-36 z-10 w-fit absolute mt-20   rounded-lg' >
                         <h1 className='text-white text-sm'>
                             CLEAR BET
                         </h1>
@@ -359,14 +412,14 @@ export default function Bet() {
                         ))}
 
                     </div>
-                    <div onClick={handlePlaceBets} className='bg-green-200 text-white p-2 w-fit absolute ml-[76%] mt-20   rounded-lg'>
+                    <div onClick={handlePlaceBets} className='bg-green-200 z-10 text-white p-2 w-fit absolute ml-[76%] mt-20   rounded-lg'>
                         <h1 className='text-black font-bold text-sm'>
                             PLACE BET
                         </h1>
 
                     </div>
                 </div>
-            </main>
-        </div>
+            </main >
+        </div >
     );
 }

@@ -2,10 +2,16 @@ import { useState, useEffect, useContext } from "react";
 import React from "react";
 import { DataContext } from "../../store/GlobalState";
 import Cookie from 'js-cookie';
-import { Dice6, Users, User, Wallet } from 'lucide-react'
+import { Dice6, Users, User, Wallet, SendToBack, SendToBackIcon, StepBack, LucideStepBack } from 'lucide-react'
 import axios from 'axios'
 import ResultsTable from '../globals/ResultsTable'
 import { useRouter } from "next/router";
+import { DM_Sans } from "next/font/google";
+import { Howl } from "howler";
+import { IoArrowBackOutline } from "react-icons/io5";
+import Link from "next/link";
+
+const inter = DM_Sans({ subsets: ["latin"] });
 
 export default function TimeRight() {
     const [time, setTime] = useState(new Date());
@@ -19,6 +25,10 @@ export default function TimeRight() {
         }, 1000);
         return () => clearInterval(timer);
     }, []);
+
+    const buttonClickSound4 = new Howl({
+        src: ['/logout.mp3'],
+    });
 
 
     const nextToDraw = new Date(
@@ -35,10 +45,25 @@ export default function TimeRight() {
     const seconds = timeDiff % 60;
     const timeToDraw = `${seconds.toString().padStart(2, "0")}`;
     const nextToDrawtime = nextToDraw.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+
+    nextToDraw.setMinutes(nextToDraw.getMinutes() + 1);
+    nextToDraw.setSeconds(0);
+
+    const nextToDrawHours = nextToDraw.getHours();
+    const nextToDrawMinutes = nextToDraw.getMinutes();
+    const nextToDrawMeridian = nextToDrawHours >= 12 ? 'PM' : 'AM';
+
+    const formattedNextToDrawHours = String(nextToDrawHours % 12).padStart(2, '0');
+    const drawTime = `${formattedNextToDrawHours}:${nextToDrawMinutes.toString().padStart(2, '0')} ${nextToDrawMeridian}`;
+
+
     const [balance, setBalance] = useState(0)
 
     const [userName, setUserName] = useState(auth && auth.user && auth.user.userName ? auth.user.userName : "");
 
+    const [winningNumber, setWinningNumber] = useState();
+    const [lastFiveWinningNumbers, setLastFiveWinningNumbers] = useState([]);
 
     useEffect(() => {
         // Retrieve username from localStorage on component mount
@@ -80,7 +105,7 @@ export default function TimeRight() {
         Cookie.remove('refreshtoken', { path: '/api/auth/refreshToken' })
         localStorage.removeItem('firstLogin')
         dispatch({ type: 'AUTH', payload: {} })
-        router.push('/')
+        router.push('/home')
     }
 
     const [isFullScreen, setIsFullScreen] = useState(false);
@@ -96,20 +121,105 @@ export default function TimeRight() {
     };
 
 
-
     console.log(balance, 'balance')
+
+    useEffect(() => {
+        if (timeToDraw === "59") { // Fetch winning number only when timeToDraw is 5
+            async function fetchWinningNumber() {
+                try {
+                    const response = await axios.get(`/api/getWinningNumber?drawTime=${drawTime}`);
+                    const newWinningNumber = response.data.couponNum;
+                    setWinningNumber(newWinningNumber);
+                    setLastFiveWinningNumbers(prevNumbers => {
+                        if (prevNumbers.length < 5) {
+                            return [...prevNumbers, newWinningNumber];
+                        } else {
+                            prevNumbers.shift(); // Remove the oldest winning number
+                            return [...prevNumbers, newWinningNumber];
+                        }
+                    });
+                } catch (error) {
+                    console.log('Error fetching winning number:', error);
+                }
+            }
+            fetchWinningNumber();
+        }
+    }, [timeToDraw]);
+
+
+    const handleLogoutClick = () => {
+        setShowModal(false);
+        handleLogout();
+    };
+    const handleband = () => {
+        setShowModal(false);
+
+    };
+
+    const handleCloseClick = () => {
+        setShowModal(true);
+    };
+    const [showModal, setShowModal] = useState(false);
+
+
 
     return (
         <div className="text-2xl   ">
-            <h1 onClick={fullScreenButton} className='cursor-pointer absolute  text-white  lg:text-3xl lg:block'>🖥️ </h1>
-
+            <div className="flex">
+                <Link href='/home'>
+                    <h1 className="text-white text-md mt-2 absolute ml-1">
+                        <IoArrowBackOutline />
+                    </h1>
+                </Link>
+            </div>
             {/* <img src="/acc.png" onClick={handleLogout} className="h-5 mt-1 ml-auto rounded-sm" /> */}
             {/* <img src="/timer.png" onClick={handleLogout} className="h-14 ml-auto mt-1 rounded-sm" /> */}
-            <p className="text-white  w-fit mb-2  rounded-md mt-2 px-2 ml-auto   shadow-[#FBEDB8] text-center  text-2xl  flex  items-center">
-                ⌛ {timeToDraw}
+            <p className="text-white  w-fit mb-2  rounded-md mt-2 px-2 ml-auto   shadow-[#FBEDB8] text-center  text-2xl gap-4 flex  items-center">
+                ⌛{timeToDraw}
+                <h1 onClick={fullScreenButton} className='cursor-pointer   text-white   lg:text-3xl lg:block'>🖥️
+                </h1>
+                <img className='h-7' src='/close.png' onClick={() => { buttonClickSound4.play(); handleCloseClick(); }} />
+
             </p>
 
-            <img src="/disclaimer.png" className="ml-auto h-14 mt-1 bg-black opacity-55" />
+            {showModal && (
+                <div className="fixed z-10 inset-0 overflow-y-auto">
+                    <div className="flex items-center justify-center min-h-screen">
+                        <div className="relative bg-white w-80 rounded-lg shadow-lg">
+                            <div className="p-4">
+                                <h2 className="text-2xl font-bold mb-4">Logout</h2>
+                                <p className="text-gray-700 text-sm">
+                                    Are you sure you want to logout?
+                                </p>
+                            </div>
+                            <div className="p-4  bg-gray-100 rounded-b-lg">
+                                <button
+                                    className="bg-red-500 hover:bg-red-700 text-white text-sm font-bold py-2 px-4 rounded"
+                                    onClick={handleLogoutClick}
+                                >
+                                    Logout
+                                </button>
+                                <button
+                                    className=" ml-4 hover:bg-red-700 text-black text-sm font-bold py-2 px-4 rounded"
+                                    onClick={handleband}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+            <div className="ml-auto h-14 mt-1  bg-white rounded-md w-48  " >
+                <h1 className={`text-sm text-center font-bold ${inter.className}`}>Last 5 Results</h1>
+                <div className="flex">
+                    {lastFiveWinningNumbers.map((number, index) => (
+                        <div key={index} className={`bg-black -800 text-white px-3 py-1 text-sm flex rounded-lg mx-1 ${inter.className}`}>
+                            {number}
+                        </div>
+                    ))}
+                </div>
+            </div>
 
 
             <div className="flex text-white mt-2 text-sm">

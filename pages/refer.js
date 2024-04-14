@@ -7,6 +7,54 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useContext, useEffect, useState } from "react";
 import { DataContext } from "../store/GlobalState";
+import { motion } from 'framer-motion';
+import {
+    EmailShareButton,
+    FacebookShareButton,
+    GabShareButton,
+    HatenaShareButton,
+    InstapaperShareButton,
+    LineShareButton,
+    LinkedinShareButton,
+    LivejournalShareButton,
+    MailruShareButton,
+    OKShareButton,
+    PinterestShareButton,
+    PocketShareButton,
+    RedditShareButton,
+    TelegramShareButton,
+    TumblrShareButton,
+    TwitterShareButton,
+    ViberShareButton,
+    VKShareButton,
+    WhatsappShareButton,
+    WorkplaceShareButton,
+} from "react-share";
+import {
+    EmailIcon,
+    FacebookIcon,
+    FacebookMessengerIcon,
+    GabIcon,
+    HatenaIcon,
+    InstapaperIcon,
+    LineIcon,
+    LinkedinIcon,
+    LivejournalIcon,
+    MailruIcon,
+    OKIcon,
+    PinterestIcon,
+    PocketIcon,
+    RedditIcon,
+    TelegramIcon,
+    TumblrIcon,
+    TwitterIcon,
+    ViberIcon,
+    VKIcon,
+    WeiboIcon,
+    WhatsappIcon,
+    WorkplaceIcon,
+    XIcon,
+} from "react-share";
 
 const inter = DM_Sans({ subsets: ["latin"] });
 
@@ -15,6 +63,8 @@ export default function Refer() {
     const { state, dispatch } = useContext(DataContext);
     const { auth } = state;
     const [linkCopied, setLinkCopied] = useState(false);
+    const [shortenedURL, setShortenedUrl] = useState("");
+    const [showModal, setShowModal] = useState(false);
 
     useEffect(() => {
         if (auth && auth.user && auth.user.referralCode) {
@@ -52,18 +102,13 @@ export default function Refer() {
     const shareReferralLink = async () => {
         try {
             const shortenedURL = await shortenURL();
-            if (shortenedURL) {
-                await navigator.clipboard.writeText(shortenedURL);
-                console.log('Referral link copied to clipboard');
-                setLinkCopied(true);
-            } else {
-                console.error('Failed to shorten URL');
-            }
+            setShortenedUrl(shortenedURL);
+            setShowModal(true);
         } catch (error) {
             console.error('Failed to copy referral link:', error);
         }
     };
-    
+
     const [userName, setUserName] = useState(auth && auth.user && auth.user.userName ? auth.user.userName : "");
 
 
@@ -116,11 +161,13 @@ export default function Refer() {
     return (
         <main className={` h-screen   bg-[#400D56]  ${inter.className}`}>
             <Navbar />
+
             <div className="h-[20rem] text-center   w-full dark:bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
                 <h1 className={`text-xl md:text-3xl mb-2 bg-black   bg-clip-text text-white  dark:bg-gradient-to-b from-white to-neutral-600 font-sans font-bold ${inter.className}`}>
                     Refer your friends and Win Big Together!
                 </h1>
                 <Image src='/dice.gif' height={50} width={50} className="m-4" />
+
                 <Button
                     size={'lg'}
                     className="p-6 md:p-8 absolute z-10 mt-64 mb-8 md:mb-0 md:text-2xl text-xl cursor-pointer  w-fit border-t-2 rounded-full border-[#4D4D4D] dark:bg-[#1F1F1F] hover:bg-white hover:text-black group transition-all flex items-center justify-center gap-4 hover:shadow-xl dark:hover:shadow-neutral-500 duration-500"
@@ -128,10 +175,33 @@ export default function Refer() {
                 >
                     Share Referral Link
                 </Button>
-                {linkCopied && <p className="text-sm text-green-500 mt-2">Referral Link copied!</p>} {/* Display message if link is copied */}
             </div>
+            {showModal && (
+                <div>
+                    <motion.div
+                        className="       rounded-lg"
+                        initial={{ opacity: 0, y: -50 }} // Initial animation properties
+                        animate={{ opacity: 1, y: 0 }} // Animation properties on appearance
+                        transition={{ delay: 0.2, duration: 0.5 }} // Animation duration and delay
+                    >
+                        <div className="flex justify-center mt-6">
+                            <WhatsappShareButton title="Play the dice game & Win big together!" url={shortenedURL} >
+                                <WhatsappIcon className="rounded-md h-10" />
+                            </WhatsappShareButton>
+                            <FacebookShareButton title="Play the dice game & Win big together!" url={shortenedURL} >
+                                <FacebookIcon className="rounded-md h-10" />
+                            </FacebookShareButton>
+                            <TelegramShareButton url={shortenedURL} title="Play the dice game & Win big together!" >
+                                <TelegramIcon className="rounded-md h-10" />
+                            </TelegramShareButton>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+
             <div className="mt-4 text-center">
                 <p className="text-2xl leading-relaxed text-white">Your referral code:</p>
+
                 <div className="flex items-center justify-center">
                     <span className="font-bold flex gap-4 bg-white text-black p-1 px-2 rounded-full mr-2">{referralCode}
                         <Copy className="text-black cursor-pointer mt-1" size={14} onClick={copyReferralCode} />
