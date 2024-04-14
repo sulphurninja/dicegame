@@ -14,6 +14,7 @@ export default function Refer() {
     const router = useRouter();
     const { state, dispatch } = useContext(DataContext);
     const { auth } = state;
+    const [linkCopied, setLinkCopied] = useState(false);
 
     useEffect(() => {
         if (auth && auth.user && auth.user.referralCode) {
@@ -49,19 +50,20 @@ export default function Refer() {
     };
 
     const shareReferralLink = async () => {
-        const longURL = `${window.location.origin}/register?referralCode=${referralCode}`;
-        const shortURL = await shortenURL(longURL);
-        if (shortURL) {
-            try {
-                await navigator.share({ url: shortURL });
-            } catch (err) {
-                console.error('Sharing failed:', err);
+        try {
+            const shortenedURL = await shortenURL();
+            if (shortenedURL) {
+                await navigator.clipboard.writeText(shortenedURL);
+                console.log('Referral link copied to clipboard');
+                setLinkCopied(true);
+            } else {
+                console.error('Failed to shorten URL');
             }
-        } else {
-            console.error('Failed to shorten URL');
+        } catch (error) {
+            console.error('Failed to copy referral link:', error);
         }
     };
-
+    
     const [userName, setUserName] = useState(auth && auth.user && auth.user.userName ? auth.user.userName : "");
 
 
@@ -71,6 +73,7 @@ export default function Refer() {
             setUserName(auth.user.userName);
         }
     }, [auth]);
+
     useEffect(() => {
         if (auth && auth.user && auth.user.referralCode) {
             // Update state and localStorage when user is authenticated
@@ -109,6 +112,7 @@ export default function Refer() {
     }, [auth]);
 
     console.log(auth.user, 'winwin')
+
     return (
         <main className={` h-screen   bg-[#400D56]  ${inter.className}`}>
             <Navbar />
@@ -124,6 +128,7 @@ export default function Refer() {
                 >
                     Share Referral Link
                 </Button>
+                {linkCopied && <p className="text-sm text-green-500 mt-2">Referral Link copied!</p>} {/* Display message if link is copied */}
             </div>
             <div className="mt-4 text-center">
                 <p className="text-2xl leading-relaxed text-white">Your referral code:</p>
