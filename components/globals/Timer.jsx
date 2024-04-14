@@ -124,7 +124,7 @@ export default function TimeRight() {
     console.log(balance, 'balance')
 
     useEffect(() => {
-        if (timeToDraw === "59") { // Fetch winning number only when timeToDraw is 5
+        if (timeToDraw === "01") { // Fetch winning number only when timeToDraw is 5
             async function fetchWinningNumber() {
                 try {
                     const response = await axios.get(`/api/getWinningNumber?drawTime=${drawTime}`);
