@@ -4,6 +4,8 @@ import { DataContext } from "../store/GlobalState";
 import { postData } from "../utils/fetchData";
 import Cookie from "js-cookie";
 import { useRouter } from "next/router";
+import { Toaster } from '../components/ui/sonner';
+import { toast } from 'sonner';
 
 
 const inter = DM_Sans({ subsets: ['latin'] });
@@ -11,6 +13,7 @@ const inter = DM_Sans({ subsets: ['latin'] });
 export default function Login() {
     const initialState = { userName: "", password: "" };
     const [userData, setUserData] = useState(initialState);
+    const [error, setError] = useState(false);
     const { userName, password } = userData;
     const { state = {}, dispatch } = useContext(DataContext);
     const { auth = {} } = state;
@@ -48,8 +51,12 @@ export default function Login() {
         // check if user has admin privileges
         if (res.user && res.user.role === 'admin') {
             router.push("/admin"); // Redirect to admin page
-        } else {
+            toast("🙏 Welcome Admin!");
+        } else if (res.user && res.user.role === 'user') {
             router.push("/home"); // Redirect to home page or any other page
+            toast("🙏 Welcome", { userName });
+        } else {
+            toast("❌ Something went wrong, please check your username and password!");
         }
     }
 
@@ -95,6 +102,8 @@ export default function Login() {
                         <a href='/register' className='text-green-200 cursor-pointer'> Register Now!</a>
                     </p>
                 </form>
+                <Toaster />
+
             </div>
         </main>
     );

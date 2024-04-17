@@ -75,13 +75,15 @@ export default function Profile() {
         >
             <Navbar />
 
-            <div className="h-[45rem] text-center   w-full dark:bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
-                <div className=" w-full flex justify-center">
-                    <div className="w-10/12 rounded-xl bg-white   justify-center ">
-                        <h1 className="text-black font-bold">{userName}{ }</h1>
-                        <h1 className={`${inter.className}  font-bold text-lg`}>Betslip</h1>
+            <div className="h-[50rem] text-center   w-full dark:bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
+                <div className=" w-full  flex justify-center">
+                    <div className="w-full mx-4 rounded-xl  bg-white    justify-center ">
+                        <div className="font-bold bg-gray-900  rounded-xl text-white rounded-b-none p-2 text-2xl">My Profile</div>
+                        <h1 className="text-black font-bold text-start p-4">👤 Username : {userName}{ }</h1>
 
-                        <div className="bg-black overflow-y-scroll h-32 rounded-lg text-xs text-white mx-4">
+                        <div className="bg-black overflow-y-scroll h-48 rounded-lg text-xs text-white mx-4">
+                        <div className={`${inter.className} bg-gray-600 text-white  font-bold text-lg`}>Betslip</div>
+
                             {userBets.length === 0 ? (
                                 <p>No bets placed, place bets and win big!</p>
                             ) : (
@@ -115,7 +117,7 @@ export default function Profile() {
                     </div>
 
                 </div>
-                <div className="bg-black -900  mt-12 w-[70%] rounded-lg">
+                <div className="bg-black -900 mx-12  mt-12 w-full rounded-lg">
                     <h1 className=' text-white font-bold'>Request Balance</h1>
 
                     <RequestBalance />

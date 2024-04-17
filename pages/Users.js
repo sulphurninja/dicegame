@@ -84,11 +84,14 @@ export default function Users() {
                             </button>
                         </Link>
                     </div>
+                    
                     <div className="py-4">
+                    <Link href='/Requests'>
                         <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
                             <IoIosNotifications className="lg:ml-3" />
                             <span className="hidden text-xs font-bold text-center md:inline">Requests</span>
                         </button>
+                        </Link>
                     </div>
                     <div className="py-4">
                         <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">

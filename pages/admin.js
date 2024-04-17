@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { FiHome, FiCheckSquare, FiBookOpen, FiTrendingUp, FiMessageSquare, FiHelpCircle, FiCalendar, FiUsers, FiFile, FiFileText, FiGitPullRequest, FiPhoneOutgoing, FiNavigation2, FiSettings, FiMinusCircle } from 'react-icons/fi';
+import { FiHome, FiCheckSquare, FiBookOpen, FiTrendingUp, FiMessageSquare, FiHelpCircle, FiUsers, FiSettings } from 'react-icons/fi';
 import { IoIosNotifications } from "react-icons/io";
 import Link from 'next/link'
 import Navbar from '../components/globals/Navbar'
@@ -16,8 +16,6 @@ export default function Admin() {
         dispatch({ type: 'AUTH', payload: {} })
         window.location.href = '/';
     }
-
-
     if (!auth || !auth.user || auth.user.role !== 'admin') {
         return <div className="min-h-screen flex items-center text-xl justify-center font-bold text-red-500">
             <MdCancel className='text-xl' /> Not authorized, Contact Admin!
@@ -46,10 +44,12 @@ export default function Admin() {
                             </Link>
                         </div>
                         <div className="py-4">
+                        <Link href='/Requests'>
                             <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
                                 <IoIosNotifications className="lg:ml-3" />
                                 <span className="hidden text-xs font-bold text-center md:inline">Requests</span>
                             </button>
+                            </Link>
                         </div>
                         <div className="py-4">
                             <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
@@ -93,7 +93,7 @@ export default function Admin() {
 
                         <button
                             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded"
-                        onClick={handleLogout}
+                            onClick={handleLogout}
                         >
                             Logout
                         </button>

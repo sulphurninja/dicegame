@@ -51,35 +51,38 @@ export default function RequestBalance() {
     };
 
     return (
-        <div className='text-white'>
+        <div className='text-white  p-6'>
             <form onSubmit={handleSubmit}>
                 <div className=''>
-                    <div>
-                        <label className='mt-2' htmlFor="requestedAmount"> Amount:</label>
+                    <div className='flex gap-4'>
+                        <label className='mt-2' htmlFor="requestedAmount"> Amount: </label>
                         <Input
                             type="number"
                             id="requestedAmount"
                             value={requestedAmount}
-                            className=''
+                            className='w-10/12 text-black'
                             onChange={(e) => setRequestedAmount(e.target.value)}
                         />
                     </div>
-                    <label htmlFor="message">Message:</label>
-                    <Input
-                        type="text"
-                        id="message"
-                        value={message}
-                        className=''
-                        onChange={(e) => setMessage(e.target.value)}
-                    />
+                    <div className='flex gap-4 mt-4'>
+
+                        <label htmlFor="message">Message:</label>
+                        <Input
+                            type="text"
+                            id="message"
+                            value={message}
+                            className='w-10/12 text-black'
+                            onChange={(e) => setMessage(e.target.value)}
+                        />
+                    </div>
                 </div>
 
-                <Button className='mt-4' type="submit" disabled={isLoading}>
+                <Button className='mt-4 text-white bg-gray-700 ' type="submit" disabled={isLoading}>
                     {isLoading ? 'Submitting...' : 'Submit Request'}
                 </Button>
             </form>
             {errorMessage && <p>Error: {errorMessage}</p>}
-            {successMessage && <p>Success: {successMessage}</p>}
+            {successMessage && <p className='text-green-500'>{successMessage}</p>}
         </div>
     );
 }

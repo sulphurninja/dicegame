@@ -24,7 +24,7 @@ export default function Bet() {
     const { state, dispatch } = useContext(DataContext);
     const { auth } = state
 
- 
+
 
     const [time, setTime] = useState(new Date());
     const [balance, setBalance] = useState(0);
@@ -52,6 +52,7 @@ export default function Bet() {
     const timeToDraw = `${seconds.toString().padStart(2, "0")}`;
     const [selectedAmount, setSelectedAmount] = useState(0);
     const [winningAmounts, setWinningAmounts] = useState([]);
+    const [winningAmount, setWinningAmount] = useState();
     const [winningNumber, setWinningNumber] = useState();
     const [numberBets, setNumberBets] = useState({});
     const [betSuccessMessage, setBetSuccessMessage] = useState(""); // State variable for bet success message
@@ -175,13 +176,16 @@ export default function Bet() {
                 } else {
                     const response = await axios.post('/api/pushBets', { numberBets, totalAmount, userName, winningNumber });
                     if (response.data.success) {
-                        setWinningAmounts(prevWinningAmounts => [...prevWinningAmounts, response.data.winningAmount]); // Store winning amount in array
+                        setWinningAmounts(prevWinningAmounts => [...prevWinningAmounts, response.data.winningAmount]);
+                        // Store winning amount in array
                         console.log('WINNING AMOUNT', response.data.winningAmount);
                         clearBets();
-                        setPushedBets(prevPushedBets => [...prevPushedBets, numberBets]); // Update pushed bets as an array
-                        toast("✅ Bet Placed successfully!"); // Update success message
-                        setPushedBetsArray(prev => [...prev, pushedBets]); // Add the newly pushed bets to the array
-
+                        setPushedBets(prevPushedBets => [...prevPushedBets, numberBets]);
+                        // Update pushed bets as an array
+                        toast("✅ Bet Placed successfully!");
+                        // Update success message
+                        setPushedBetsArray(prev => [...prev, pushedBets]);
+                        // Add the newly pushed bets to the array
                     }
                     console.log('Bets published successfully!');
                     clearBets();
@@ -201,6 +205,7 @@ export default function Bet() {
             const response = await axios.post('/api/addWinnings', { winningAmounts, userName });
             if (response.data.success) {
                 toast(`🏆 You Won + ${response.data.totalWinningAmount}`);
+                setWinningAmount(response.data.totalWinningAmount);
                 setWinningAmounts([]);
                 setPushedBets([]);
                 setPushedBetsArray([]);
@@ -309,20 +314,28 @@ export default function Bet() {
                             animate={{ opacity: 1, y: 0 }} // Animation properties on appearance
                             transition={{ delay: 0.2, duration: 0.5 }} // Animation duration and delay
                         >
-                            <h2 className="text-4xl font-bold text-white  text-center">Winning Number</h2>
-                            <div className='flex mt-2 gap-2 justify-center'>
-                                <img src='/win.gif' className='h-12   mt-2' />
-                                <h1 className="text-6xl font-bold mt-auto  text-center text-purple-100 -200">{winningNumber}</h1>
+                            {winningAmount === 0 ? <h2 className="text-3xl font-bold text-red-500  text-center">
+                                Better luck next time!
+                            </h2> : <h2 className="text-4xl font-bold text-white -500  text-center">
+                                You Won!
+                            </h2>}
 
-                            </div>
+                            {winningAmount !== 0 && (
+                                <div className='flex mt-2 gap-2 justify-center'>
+                                    <img src='/win.gif' className='h-12   mt-2' />
+                                    <h1 className="text-6xl font-bold mt-auto  text-center text-purple-100 -200">{winningAmount}</h1>
+                                </div>
+                            )}
+                            <h1 className="text-2xl font-bold mt-auto  text-center text-purple-100 -200">
+                                Winning Number {winningNumber}
+                            </h1>
                             <div className='w-full flex justify-center'>
-                                <Button className="mt-4 bg-amber-600 text-white px-6 py-2 rounded-lg" onClick={handleCloseModal} >OK</Button>
+                                <Button className="mt-4 bg-amber-600 text-white px-6 py-2 rounded-lg" onClick={handleCloseModal}>OK</Button>
                             </div>
-
                         </motion.div>
                     </motion.div>
                 )}
-               
+
 
                 <div className='grid grid-cols-3 -mt-12'>
                     <div className='grid grid-cols-3  ml-6 -mt-12  '>
