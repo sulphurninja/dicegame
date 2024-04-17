@@ -1,6 +1,6 @@
 // pages/api/approveRequest/[id].js
 
-import Dataset from '../../../models/request';
+import Dataset from '../../../models/withdrawRequest';
 import Users from '../../../models/userModel';
 
 export default async function handler(req, res) {
@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     }
 
     // Toggle the approved field
-    request.approved = !request.approved;
+    request.unapproved = !request.unapproved;
 
     // Save the updated request
     await request.save();
@@ -39,7 +39,7 @@ export default async function handler(req, res) {
     // Save the updated user
     await user.save();
 
-    res.status(200).json({ success: true, message: `Request ${request.approved ? 'approved' : 'unapproved'} successfully.` });
+    res.status(200).json({ success: true, message: `Request ${request.unapproved ? 'approved' : 'unapproved'} successfully.` });
   } catch (error) {
     console.error('Error toggling approval:', error);
     res.status(500).json({ error: 'Internal Server Error', message: 'Unable to toggle approval status.' });

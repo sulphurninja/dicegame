@@ -126,6 +126,8 @@ export default function Refer() {
         }
     }, [auth]);
 
+    // console.log(referralCode, 'ref code')
+
     const [winHistory, setWinHistory] = useState([]);
     // const [name, setName] = useState("");
 

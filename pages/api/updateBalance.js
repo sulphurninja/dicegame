@@ -1,7 +1,12 @@
 import Users from '../../models/userModel';
+import { MongoClient } from 'mongodb';
+
+const uri = process.env.MONGODB_URL;
+const client = new MongoClient(uri, {});
 
 export default async (req, res) => {
     try {
+        await client.connect();
         const { userName } = req.query;
         const user = await Users.findOne({ userName });
 

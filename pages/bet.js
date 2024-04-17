@@ -72,16 +72,51 @@ export default function Bet() {
     const drawTime = `${formattedNextToDrawHours}:${nextToDrawMinutes.toString().padStart(2, '0')} ${nextToDrawMeridian}`;
 
     // console.log(drawTime, 'draw time',)
+    const buttonClickSound3 = new Howl({
+        src: ['/select.mp3'],
+    });
+
+    const buttonClickSound = new Howl({
+        src: ['/clear.mp3'],
+    });
+    const diceSound = new Howl({
+        src: ['/dice.mp3'],
+    });
+
+    const placeSound = new Howl({
+        src: ['/place.mp3'],
+    });
+
+    const winSound = new Howl({
+        src: ['/win.mp3'],
+    });
+    const failSound = new Howl({
+        src: ['/fail.mp3'],
+    });
 
 
     useEffect(() => {
         if (timeToDraw === "00") {
             diceRef.current.rollDice();
             addWinnings();
+            diceSound.play();
         } else if (timeToDraw === "58") {
             setShowWinningModal(true);
         }
     }, [timeToDraw]);
+
+    const [soundPlayed, setSoundPlayed] = useState(false);
+
+    useEffect(() => {
+        if (showWinningModal && !soundPlayed) {
+            if (winningAmount === 0) {
+                failSound.play();
+            } else if (winningAmount >0) {
+                winSound.play();
+            }
+            setSoundPlayed(true);
+        }
+    }, [showWinningModal, soundPlayed, winningAmount]);
 
     const [userName, setUserName] = useState(auth && auth.user && auth.user.userName ? auth.user.userName : "");
 
@@ -134,13 +169,7 @@ export default function Bet() {
         }
     });
 
-    const buttonClickSound3 = new Howl({
-        src: ['/select.mp3'],
-    });
 
-    const buttonClickSound = new Howl({
-        src: ['/clear.mp3'],
-    });
 
     const [index, setIndex] = useState(0);
 
@@ -172,8 +201,13 @@ export default function Bet() {
             try {
                 // Deduct the totalAmount from the user's balance
                 if (balance < totalAmount) {
-                    alert('Insufficient Balance!!')
+                    toast('🫗 Insufficient Balance!!')
                 } else {
+                    const halfBalance = balance / 2; // Calculate half of the user's balance
+                    if (totalAmount > halfBalance) {
+                        toast('⚠️ Total bet amount cannot exceed half of your balance!');
+                        return; // Prevent bet placement if total amount exceeds half of the balance
+                    }
                     const response = await axios.post('/api/pushBets', { numberBets, totalAmount, userName, winningNumber });
                     if (response.data.success) {
                         setWinningAmounts(prevWinningAmounts => [...prevWinningAmounts, response.data.winningAmount]);
@@ -204,7 +238,7 @@ export default function Bet() {
         try {
             const response = await axios.post('/api/addWinnings', { winningAmounts, userName });
             if (response.data.success) {
-                toast(`🏆 You Won + ${response.data.totalWinningAmount}`);
+                // toast(`🏆 You Won + ${response.data.totalWinningAmount}`);
                 setWinningAmount(response.data.totalWinningAmount);
                 setWinningAmounts([]);
                 setPushedBets([]);
@@ -294,8 +328,8 @@ export default function Bet() {
 
                 <div className='flex justify-center'>
                     {/* <img src='/images/ribbon.png' className='mt-1' /> */}
-                    <h1 className='text-white font-bold absolute text-2xl mt-2'>Dice</h1>
-                    <img src='/dice.gif' className='h-8 absolute ml-24 mt-2' />
+                    <h1 className={`text-white font-bold absolute text-2xl ${inter.className}`}>DICE</h1>
+                    <img src='/dice.gif' className='h-6 absolute ml-24 mt-1 ' />
 
                 </div>
 
@@ -351,7 +385,7 @@ export default function Bet() {
                         ))}
 
                     </div>
-                    <div className="  scale-[30%] absolute ml-[35%] -mt-28 flex justify-center">
+                    <div className="  scale-[30%] absolute ml-[36%] -mt-28 flex justify-center">
                         <Dice ref={diceRef} cheatValue={winningNumber} />
                     </div>
 
@@ -361,7 +395,7 @@ export default function Bet() {
 
                 <div className="grid grid-rows-2 grid-cols-6 gap-8 ml-6 mt-6  ">
                     {[1, 2, 3, 4, 5, 6].map(number => (
-                        <button className="text-white font-bold" key={number} onClick={() => handleNumberClick(number)}>
+                        <button className="text-white font-bold" key={number} onClick={() => { buttonClickSound3.play(); handleNumberClick(number) }}>
 
                             <div
                                 src={`/images/${number}.png`}
@@ -425,7 +459,7 @@ export default function Bet() {
                         ))}
 
                     </div>
-                    <div onClick={handlePlaceBets} className='bg-green-200 z-10 text-white p-2 w-fit absolute ml-[76%] mt-20   rounded-lg'>
+                    <div onClick={() => { handlePlaceBets(); placeSound.play(); }} className='bg-green-200 z-10 text-white p-2 w-fit absolute ml-[76%] mt-20   rounded-lg'>
                         <h1 className='text-black font-bold text-sm'>
                             PLACE BET
                         </h1>

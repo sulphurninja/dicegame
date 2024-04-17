@@ -19,7 +19,7 @@ import RequestBalance from "../components/globals/RequestBalance";
 
 const inter = DM_Sans({ subsets: ["latin"] });
 
-export default function Profile() {
+export default function RequestandWithdraw() {
     const { state, dispatch } = useContext(DataContext);
     const { auth } = state;
     const [userName, setUserName] = useState(auth && auth.user && auth.user.userName ? auth.user.userName : "");
@@ -74,58 +74,8 @@ export default function Profile() {
             className={` h-screen   bg-[#400D56]  ${inter.className}`}
         >
             <Navbar />
-
-            <div className="h-[40rem] text-center   w-full dark:bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
-                <div className=" w-full  flex justify-center">
-                    <div className="w-full mx-4 rounded-xl  bg-white    justify-center ">
-                        <div className="font-bold bg-gray-900  rounded-xl text-white rounded-b-none p-2 text-2xl">My Profile</div>
-                        <h1 className="text-black font-bold text-start p-4">👤 Username : {userName}{ }</h1>
-
-                        <div className="bg-black overflow-y-scroll h-48 rounded-lg rounded-b-none text-xs text-white mx-4">
-                            <div className={`${inter.className} bg-gray-600 text-white  font-bold text-lg`}>Betslip</div>
-
-                            {userBets.length === 0 ? (
-                                <p>No bets placed, place bets and win big!</p>
-                            ) : (
-                                <ul>
-                                    {userBets.map((bet, index) => (
-                                        <li key={index} className="flex justify-between py-2">
-                                            <div className="flex-1">
-                                                {/* <p>Number Bets: {JSON.stringify(bet.numberBets)}</p> */}
-                                                <div className="text-white flex gap-4 p-4">
-                                                    <p>{index + 1}</p>
-                                                    <p>🪙 {bet.totalAmount}</p>
-                                                </div>
-
-
-                                            </div>
-                                            <div className="flex-1 p-4">
-                                                <p>Placed At: {new Date(bet.createdAt).toLocaleString('en-US', {
-                                                    hour: 'numeric',
-                                                    minute: 'numeric',
-                                                    hour12: true
-                                                })}</p>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-
-                        </div>
-
-
-                    </div>
-
-                </div>
-                <div className="bg-black -900 mx-12  mt-12 w-10/12 rounded-lg">
-                    <Link href='/RequestandWithdraw'>
-                        <h1 className='p-3  text-white font-bold'>Requests & Withdrawals</h1>
-                    </Link>
-                    {/* <RequestBalance /> */}
-
-                </div>
-
-            </div>
+            <h1 className="text-white pt-20 text-center font-bold">Requests & Withdrawals</h1>
+            <RequestBalance />
 
             <nav className="fixed bottom-0 left-0 w-full bg-[#] text-white flex justify-center">
                 <ul className="flex justify-around w-full max-w-screen-lg py-4">

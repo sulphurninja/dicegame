@@ -167,21 +167,22 @@ export default function TimeRight() {
         <div className="text-2xl   ">
             <div className="flex">
                 <Link href='/home'>
-                    <h1 className="text-white text-md mt-2 absolute ml-1">
+                    <h1 className="text-white text-md mt-1 absolute ml-1">
                         <IoArrowBackOutline />
                     </h1>
                 </Link>
             </div>
             {/* <img src="/acc.png" onClick={handleLogout} className="h-5 mt-1 ml-auto rounded-sm" /> */}
             {/* <img src="/timer.png" onClick={handleLogout} className="h-14 ml-auto mt-1 rounded-sm" /> */}
-            <p className="text-white  w-fit mb-2  rounded-md mt-2 px-2 ml-auto   shadow-[#FBEDB8] text-center  text-2xl gap-4 flex  items-center">
-                ⌛{timeToDraw}
-                <h1 onClick={fullScreenButton} className='cursor-pointer   text-white   lg:text-3xl lg:block'>🖥️
-                </h1>
-                <img className='h-7' src='/close.png' onClick={() => { buttonClickSound4.play(); handleCloseClick(); }} />
+            <div className="bg-black shadow-md shadow-white mb-2  ml-auto ">
+                <p className="text-white  w-fit   rounded-md m px-2 ml-auto   shadow-[#FBEDB8] text-center  text-xl gap-4 flex  items-center">
+                    <h1 className='cursor-pointer   text-white font-bold    text-xl lg:block'> ⌛{timeToDraw} </h1>
+                    <h1 onClick={fullScreenButton} className='cursor-pointer   text-black   text-xl lg:block'>🖥️
+                    </h1>
+                    <img className='h-5' src='/close.png' onClick={() => { buttonClickSound4.play(); handleCloseClick(); }} />
 
-            </p>
-
+                </p>
+            </div>
             {showModal && (
                 <div className="fixed z-10 inset-0 overflow-y-auto">
                     <div className="flex items-center justify-center min-h-screen">
@@ -210,32 +211,32 @@ export default function TimeRight() {
                     </div>
                 </div>
             )}
-            <div className="ml-auto h-14 mt-1  bg-white rounded-md w-48  " >
-                <h1 className={`text-sm text-center font-bold ${inter.className}`}>Last 5 Results</h1>
+            <div className="ml-auto h-14 mt-1  bg-[#FFB02E] rounded-md w-48  " >
+                <h1 className={`text-sm  text-center font-bold ${inter.className}`}>Last 5 Results</h1>
                 <div className="flex">
                     {lastFiveWinningNumbers.map((number, index) => (
-                        <div key={index} className={`bg-black -800 text-white px-3 py-1 text-sm flex rounded-lg mx-1 ${inter.className}`}>
+                        <div key={index} className={`bg-black -800 text-white px-3 py-1 text-sm flex rounded-lg mx-[3px] ${inter.className}`}>
                             {number}
                         </div>
                     ))}
                 </div>
             </div>
+            <div className="flex bg-white w-fit rounded-lg ml-auto text-white mt-2 p-1 text-sm">
+                <User className='text-black h-5 ml-auto' />
 
-
-            <div className="flex text-white mt-2 text-sm">
-                <Wallet className='text-white h-5  ml-auto' />
-                <h1 className="bg-white rounded-lg text-black px-3 ">
-                    {balance}.00
-                </h1>
-            </div>
-
-            <div className="flex text-white mt-2 text-sm">
-                <User className='text-white ml-auto' />
-
-                <h1 className="bg-white rounded-lg text-black px-3 ">
+                <h1 className={` text-black font-bold  px-1 ${inter.className}`}>
                     {userName}
                 </h1>
             </div>
+
+            <div className="flex bg-white w-fit rounded-lg ml-auto p-1 text-white mt-2 text-sm">
+                <Wallet className='text-black h-5  ml-auto' />
+                <h1 className={` text-black font-bold  px-2 ${inter.className}`}>
+                    {balance}
+                </h1>
+            </div>
+
+
 
 
 

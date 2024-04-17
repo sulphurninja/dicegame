@@ -4,6 +4,8 @@ import { Wallet } from 'lucide-react'
 import { DataContext } from '../../store/GlobalState';
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/router';
+import axios from 'axios';
+import { Button } from '../ui/button';
 
 export default function Navbar() {
     const { state, dispatch } = useContext(DataContext);
@@ -43,19 +45,19 @@ export default function Navbar() {
         <header className='fixed top-0 left-0 right-0 py-4 px-4 bg- dark:bg-black/40 backdrop-blur-lg z-[100] flex items-center border-b-[1px] border-neutral-900 justify-between '>
             <h1 className='font-bold text-xl text-white'>Dice🎲</h1>
             <div className=' flex gap-4'>
-                <div className='rounded-xl  gap-4 px-4 p-1 flex justify-between border   '>
+                <div className='rounded-md bg-black  gap-4 px-3 p-1 flex mt-1 justify-between border   '>
                     <div>
                         <Wallet className='text-white' />
                     </div>
                     <h1 className='text-white ml-auto'>{balance}</h1>
 
                 </div>
-                <button
-                    className="bg-red-500 hover:bg-red-700 text-white text-sm font-bold py-2 px-4 rounded"
+                <Button
+                    className="bg-red-500 hover:bg-red-700 text-white text-sm font-bold  px-4  rounded"
                     onClick={handleLogoutClick}
                 >
                     Logout
-                </button>
+                </Button>
             </div>
         </header>
     )

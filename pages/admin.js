@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { FiHome, FiCheckSquare, FiBookOpen, FiTrendingUp, FiMessageSquare, FiHelpCircle, FiUsers, FiSettings } from 'react-icons/fi';
+import { FiHome, FiCheckSquare, FiBookOpen, FiTrendingUp, FiMessageSquare, FiHelpCircle, FiUsers, FiSettings, FiActivity } from 'react-icons/fi';
 import { IoIosNotifications } from "react-icons/io";
 import Link from 'next/link'
 import Navbar from '../components/globals/Navbar'
@@ -10,12 +10,14 @@ import Cookie from 'js-cookie'
 export default function Admin() {
     const { state, dispatch } = useContext(DataContext);
     const { auth } = state;
+
     const handleLogout = () => {
         Cookie.remove('refreshtoken', { path: '/api/auth/refreshToken' })
         localStorage.removeItem('firstLogin')
         dispatch({ type: 'AUTH', payload: {} })
         window.location.href = '/';
     }
+
     if (!auth || !auth.user || auth.user.role !== 'admin') {
         return <div className="min-h-screen flex items-center text-xl justify-center font-bold text-red-500">
             <MdCancel className='text-xl' /> Not authorized, Contact Admin!
@@ -44,11 +46,19 @@ export default function Admin() {
                             </Link>
                         </div>
                         <div className="py-4">
-                        <Link href='/Requests'>
-                            <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
-                                <IoIosNotifications className="lg:ml-3" />
-                                <span className="hidden text-xs font-bold text-center md:inline">Requests</span>
-                            </button>
+                            <Link href='/Requests'>
+                                <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
+                                    <IoIosNotifications className="lg:ml-3" />
+                                    <span className="hidden text-xs font-bold text-center md:inline">Requests</span>
+                                </button>
+                            </Link>
+                        </div>
+                        <div className="py-4">
+                            <Link href='/Withdrawals'>
+                                <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
+                                    <FiActivity className="lg:ml-5" />
+                                    <span className="hidden text-xs font-bold text-center md:inline">Withdrawals</span>
+                                </button>
                             </Link>
                         </div>
                         <div className="py-4">
@@ -115,12 +125,19 @@ export default function Admin() {
                                 <p className="text-[#D7D3D0] font-sans">Balance Requests</p>
                             </div>
                         </Link>
+                        <Link href='/Withdrawals'>
+                            <div className="p-4 bg-[#1D1817] rounded-md hover:bg-[#C53131] cursor-pointer transition duration-300 ease-in-out">
+                                <FiBookOpen className="absolute" />
+                                <h2 className="text-lg font-bold font-sans text-[#FEFEFF] mb-2">Withdrawals</h2>
+                                <p className="text-[#D7D3D0] font-sans">Withdraw Requests</p>
+                            </div>
+                        </Link>
                         {/* Progress Card */}
                         <Link href='/Update'>
                             <div className="p-4 bg-[#1D1817] rounded-md hover:bg-[#C53131] cursor-pointer transition duration-300 ease-in-out">
                                 <FiTrendingUp className="absolute" />
-                                <h2 className="text-lg font-bold font-sans text-[#FEFEFF] mb-2">Update Winning Numbers</h2>
-                                <p className="text-[#D7D3D0] font-sans">Update Results</p>
+                                <h2 className="text-lg font-bold font-sans text-[#FEFEFF] mb-2">Display Winning Numbers</h2>
+                                <p className="text-[#D7D3D0] font-sans">Display Results</p>
                             </div>
                         </Link>
                         {/* Discussion Card */}

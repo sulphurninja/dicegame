@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FiHome, FiCheckSquare, FiBookOpen, FiTrendingUp, FiMessageSquare, FiHelpCircle, FiCalendar, FiUsers, FiFile, FiFileText, FiEdit, FiTrash2, FiGitPullRequest, FiPhoneOutgoing, FiNavigation2, FiSettings, FiMinusCircle } from 'react-icons/fi';
+import { FiHome, FiCheckSquare, FiBookOpen, FiTrendingUp, FiMessageSquare, FiHelpCircle, FiCalendar, FiUsers, FiFile, FiFileText, FiEdit, FiTrash2, FiGitPullRequest, FiPhoneOutgoing, FiNavigation2, FiSettings, FiMinusCircle, FiActivity } from 'react-icons/fi';
 import { IoIosNotifications } from "react-icons/io";
 import Link from 'next/link'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
@@ -84,20 +84,30 @@ export default function Users() {
                             </button>
                         </Link>
                     </div>
-                    
+
                     <div className="py-4">
-                    <Link href='/Requests'>
-                        <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
-                            <IoIosNotifications className="lg:ml-3" />
-                            <span className="hidden text-xs font-bold text-center md:inline">Requests</span>
-                        </button>
+                        <Link href='/Requests'>
+                            <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
+                                <IoIosNotifications className="lg:ml-3" />
+                                <span className="hidden text-xs font-bold text-center md:inline">Requests</span>
+                            </button>
                         </Link>
                     </div>
                     <div className="py-4">
-                        <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
-                            <FiCheckSquare className="lg:ml-3" />
-                            <span className="hidden text-center text-sm font-bold md:inline">Results</span>
-                        </button>
+                        <Link href='/Withdrawals'>
+                            <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
+                                <FiActivity className="lg:ml-5" />
+                                <span className="hidden text-xs font-bold text-center md:inline">Withdrawals</span>
+                            </button>
+                        </Link>
+                    </div>
+                    <div className="py-4">
+                        <Link href='/Update'>
+                            <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
+                                <FiCheckSquare className="lg:ml-3" />
+                                <span className="hidden text-center text-sm font-bold md:inline">Results</span>
+                            </button>
+                        </Link>
                     </div>
                     <div className="py-4">
                         <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
