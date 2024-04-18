@@ -105,7 +105,7 @@ export default function TimeRight() {
         Cookie.remove('refreshtoken', { path: '/api/auth/refreshToken' })
         localStorage.removeItem('firstLogin')
         dispatch({ type: 'AUTH', payload: {} })
-        router.push('/home')
+        router.push('/login')
     }
 
     const [isFullScreen, setIsFullScreen] = useState(false);
