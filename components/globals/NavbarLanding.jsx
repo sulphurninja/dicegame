@@ -12,7 +12,7 @@ export default function NavbarLanding() {
     }
     return (
         <header className=' top-0 left-0 right-0 border-[#4543A9] py-4 px-4 bg-transparent absolute   z-[100] flex items-center border-b-[1px] mx-4 justify-between '>
-            <h1 className='font-extrabold text-xl md:text-3xl uppercase  text-white'>Dice🎲</h1>
+            <h1 className='font-extrabold text-xl md:text-3xl uppercase  text-white'>गुडगुडी🎲</h1>
             <div className='justify-end flex'>
 
             </div>

@@ -111,7 +111,7 @@ export default function Bet() {
         if (showWinningModal && !soundPlayed) {
             if (winningAmount === 0) {
                 failSound.play();
-            } else if (winningAmount >0) {
+            } else if (winningAmount > 0) {
                 winSound.play();
             }
             setSoundPlayed(true);
@@ -161,6 +161,20 @@ export default function Bet() {
         setTotalAmount(0);
     }
 
+    const clearLastBet = () => {
+        const keys = Object.keys(numberBets);
+        const lastBetNumber = keys[keys.length - 1];
+        if (lastBetNumber) {
+            setNumberBets(prevBets => {
+                const updatedBets = { ...prevBets };
+                delete updatedBets[lastBetNumber];
+                return updatedBets;
+            });
+            setTotalAmount(prevTotalAmount => prevTotalAmount - (numberBets[lastBetNumber] || 0)); // Subtract the last bet amount from the total
+        }
+    };
+
+
     const imageAmounts = {};
     Object.keys(numberBets).forEach((number) => {
         const amount = numberBets[number];
@@ -199,6 +213,10 @@ export default function Bet() {
             return;
         } else {
             try {
+                // Fetch the winning number before placing bets
+                const winningNumberResponse = await axios.get(`/api/getWinningNumber?drawTime=${drawTime}`);
+                const winningNumber = winningNumberResponse.data.couponNum;
+
                 // Deduct the totalAmount from the user's balance
                 if (balance < totalAmount) {
                     toast('🫗 Insufficient Balance!!')
@@ -230,6 +248,7 @@ export default function Bet() {
             }
         }
     };
+
 
     // console.log('WINNING AMOUNT', winningAmount)
 
@@ -328,7 +347,7 @@ export default function Bet() {
 
                 <div className='flex justify-center'>
                     {/* <img src='/images/ribbon.png' className='mt-1' /> */}
-                    <h1 className={`text-white font-bold absolute text-2xl ${inter.className}`}>DICE</h1>
+                    <h1 className={`text-white font-bold absolute text-lg ${inter.className}`}>गुडगुडी</h1>
                     <img src='/dice.gif' className='h-6 absolute ml-24 mt-1 ' />
 
                 </div>
@@ -433,9 +452,19 @@ export default function Bet() {
 
                     </div>
 
+                    <div onClick={() => {
+                        buttonClickSound.play();
+                        clearLastBet();
+                    }} className='bg-red-900 p-2 ml-64 z-10 w-fit absolute mt-20   rounded-lg' >
+                        <h1 className='text-white text-sm'>
+                            CLEAR LAST BET
+                        </h1>
+
+                    </div>
+
                     <Toaster />
 
-                    <div onClick={clearBets} className='bg-[#B33659] shadow-white  -700  px-2  ml-80  absolute mt-20 h-16 overflow-hidden  text-center   rounded-lg'>
+                    <div onClick={clearBets} className='bg-[#B33659] shadow-white  -700  px-2  ml-96  absolute mt-20 h-16 overflow-hidden  text-center   rounded-lg'>
                         <h2 className='font-bold text-white  text-xs'> Current Bet:</h2>
 
                         {/* <h1 className='text-xs font-bold  text-white'>Current Bet</h1> */}
@@ -459,7 +488,7 @@ export default function Bet() {
                         ))}
 
                     </div>
-                    <div onClick={() => { handlePlaceBets(); placeSound.play(); }} className='bg-green-200 z-10 text-white p-2 w-fit absolute ml-[76%] mt-20   rounded-lg'>
+                    <div onClick={() => { handlePlaceBets(); placeSound.play(); }} className='bg-green-200 z-10 text-white p-2 w-fit absolute ml-[82%] mt-20   rounded-lg'>
                         <h1 className='text-black font-bold text-sm'>
                             PLACE BET
                         </h1>

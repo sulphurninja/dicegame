@@ -43,7 +43,7 @@ export default function Navbar() {
 
     return (
         <header className='fixed top-0 left-0 right-0 py-4 px-4 bg- dark:bg-black/40 backdrop-blur-lg z-[100] flex items-center border-b-[1px] border-neutral-900 justify-between '>
-            <h1 className='font-bold text-xl text-white'>Dice🎲</h1>
+            <h1 className='font-bold text-xl text-white'>गुडगुडी 🎲</h1>
             <div className=' flex gap-4'>
                 <div className='rounded-md bg-black  gap-4 px-3 p-1 flex mt-1 justify-between border   '>
                     <div>

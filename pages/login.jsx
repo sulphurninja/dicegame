@@ -68,7 +68,7 @@ export default function Login() {
     return (
         <main className={`min-h-screen bg-[#102815] wow ${inter.className}`}>
             <header className='top-0 left-0 right-0 py-4 px-4 bg-transparent backdrop-blur-sm z-[100] flex items-center text-center border-b-[1px] border-[#4543A9]  justify-center'>
-                <h1 className={`text-white text-lg md:text-2xl text-center ${inter.className}`}>Dice - Login 🎲</h1>
+                <h1 className={`text-white text-lg md:text-2xl text-center ${inter.className}`}>गुडगुडी - Login 🎲</h1>
             </header>
             <div className="container bg-primary shadow-white/60  shadow-[0_3px_10px_rgb(0,0,0,0.2)] rounded-xl mx-auto p-6 md:w-1/2 w-10/12 text-black mt-8">
                 <form onSubmit={handleSubmit} className="space-y-4">
