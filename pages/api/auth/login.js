@@ -40,6 +40,8 @@ const login = async (req, res) => {
                 referralCode: user.referralCode,
                 winHistory: user.winHistory,
                 referralWinnings: user.referralWinnings,
+                kycApproved: user.kycApproved,
+                kycSubmitted: user.kycSubmitted,
             }
         })
 

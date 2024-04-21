@@ -46,7 +46,15 @@ const userSchema = new mongoose.Schema({
             type: Number,
             required: true
         }
-    }]
+    }],
+    kycApproved: {
+        type: Boolean,
+        default: false,
+    },
+    kycSubmitted: {
+        type: Boolean,
+        default: false,
+    },
 })
 
 let Dataset = mongoose.models.user || mongoose.model('user', userSchema)

@@ -24,6 +24,8 @@ export default async (req, res) => {
                 winHistory: user.winHistory,
                 referralWinnings: user.referralWinnings,
                 referralCode: user.referralCode,
+                kycApproved: user.kycApproved,
+                kySubmitted:user.kycSubmitted,
             }
         })
     } catch (err) {

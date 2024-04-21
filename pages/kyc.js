@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useState } from 'react'
 import { FiHome, FiCheckSquare, FiBookOpen, FiTrendingUp, FiMessageSquare, FiHelpCircle, FiUsers, FiSettings, FiActivity, FiFile } from 'react-icons/fi';
 import { IoIosNotifications } from "react-icons/io";
 import Link from 'next/link'
@@ -6,28 +6,52 @@ import Navbar from '../components/globals/Navbar'
 import { DataContext } from '../store/GlobalState';
 import { MdCancel } from "react-icons/md";
 import Cookie from 'js-cookie'
+import axios from 'axios';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '../components/ui/accordion';
+import { Button } from '../components/ui/button';
 
-export default function Admin() {
-    const { state, dispatch } = useContext(DataContext);
-    const { auth } = state;
+export default function kyc() {
+    const [kyc, setKyc] = useState([])
 
-    const handleLogout = () => {
-        Cookie.remove('refreshtoken', { path: '/api/auth/refreshToken' })
-        localStorage.removeItem('firstLogin')
-        dispatch({ type: 'AUTH', payload: {} })
-        window.location.href = '/';
-    }
+    useEffect(() => {
+        const fetchRequests = async () => {
+            try {
+                const response = await axios.get('/api/getKyc');
+                setKyc(response.data);
+                console.log(kyc, 'kyc');
+            } catch (error) {
+                console.error('Error fetching kycs:', error);
+            }
+        };
+        fetchRequests();
+    }, []);
 
-    if (!auth || !auth.user || auth.user.role !== 'admin') {
-        return <div className="min-h-screen flex items-center text-xl justify-center font-bold text-red-500">
-            <MdCancel className='text-xl' /> Not authorized, Contact Admin!
-        </div>;
-    }
+
+    const handleApproveKyc = async (id) => {
+        try {
+            await axios.post('/api/approveKyc', { id });
+            // After successful approval, fetch KYC documents again to update the UI
+            const response = await axios.get('/api/getKyc');
+            setKyc(response.data);
+        } catch (error) {
+            console.error('Error approving KYC:', error.message);
+        }
+    };
+
+    const handleRejectKyc = async (id) => {
+        try {
+            await axios.post('/api/rejectKyc', { id });
+            // After successful rejection, fetch KYC documents again to update the UI
+            const response = await axios.get('/api/getKyc');
+            setKyc(response.data);
+        } catch (error) {
+            console.error('Error rejecting KYC:', error.message);
+        }
+    };
 
 
     return (
         <>
-            {/* <Navbar/> */}
             <div className="flex min-h-screen text-center bg-gray-100" >
                 <aside className="w-16 md:w-20 lg:w-24 bg-[#1D1817] text-white" >
                     <nav className="flex flex-col items-center">
@@ -98,7 +122,6 @@ export default function Admin() {
 
                     </nav>
                 </aside >
-
                 <main className="flex-1   bg-neutral-300  p-6">
                     <header className="flex items-center justify-between mb-6">
                         <div className='w-[15%]  h-[10%]'>
@@ -111,68 +134,36 @@ export default function Admin() {
 
                         <button
                             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded"
-                            onClick={handleLogout}
+
                         >
                             Logout
                         </button>
                     </header>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-                        {/* Task Card */}
-                        <Link href='/Users'>
-                            <div className="p-4 bg-[#1D1817] rounded-md hover:bg-[#C53131] cursor-pointer transition duration-300 ease-in-out">
-                                <FiCheckSquare className="absolute" />
-                                <h2 className="text-lg font-bold font-sans text-[#FEFEFF] mb-2">Users </h2>
-                                <p className="text-[#D7D3D0] font-sans">Your Users appear here</p>
-                            </div>
-                        </Link>
-                        {/* Tutorial Card */}
-                        <Link href='/Requests'>
-                            <div className="p-4 bg-[#1D1817] rounded-md hover:bg-[#C53131] cursor-pointer transition duration-300 ease-in-out">
-                                <FiBookOpen className="absolute" />
-                                <h2 className="text-lg font-bold font-sans text-[#FEFEFF] mb-2">Requests</h2>
-                                <p className="text-[#D7D3D0] font-sans">Balance Requests</p>
-                            </div>
-                        </Link>
-                        <Link href='/Withdrawals'>
-                            <div className="p-4 bg-[#1D1817] rounded-md hover:bg-[#C53131] cursor-pointer transition duration-300 ease-in-out">
-                                <FiBookOpen className="absolute" />
-                                <h2 className="text-lg font-bold font-sans text-[#FEFEFF] mb-2">Withdrawals</h2>
-                                <p className="text-[#D7D3D0] font-sans">Withdraw Requests</p>
-                            </div>
-                        </Link>
-                        {/* Progress Card */}
-                        <Link href='/Update'>
-                            <div className="p-4 bg-[#1D1817] rounded-md hover:bg-[#C53131] cursor-pointer transition duration-300 ease-in-out">
-                                <FiTrendingUp className="absolute" />
-                                <h2 className="text-lg font-bold font-sans text-[#FEFEFF] mb-2">Display Winning Numbers</h2>
-                                <p className="text-[#D7D3D0] font-sans">Display Results</p>
-                            </div>
-                        </Link>
-                        {/* Discussion Card */}
-                        <Link href='/settings'>
-                            <div className="p-4 bg-[#1D1817] rounded-md hover:bg-[#C53131] cursor-pointer transition duration-300 ease-in-out">
-                                <FiMessageSquare className="absolute" />
-                                <h2 className="text-lg font-bold font-sans text-[#FEFEFF] mb-2">Settings</h2>
-                                <p className="text-[#D7D3D0] font-sans">Update Account settings</p>
-                            </div>
-                        </Link>
-                        {/* <Link href='/Attendance'>
-                            <div className="p-4 bg-[#1D1817] rounded-md hover:bg-[#C53131] cursor-pointer transition duration-300 ease-in-out">
-                                <FiCalendar className="absolute" />
-                                <h2 className="text-lg font-bold font-sans text-[#FEFEFF] mb-2">Attendance</h2>
-                                <p className="text-[#D7D3D0] font-sans">Track your attendance</p>
-                            </div>
-                        </Link> */}
-                        {/* Help Card */}
-                        <Link href='/help'>
-                            <div className="p-4 bg-[#1D1817] rounded-md hover:bg-[#C53131] cursor-pointer transition duration-300 ease-in-out">
-                                <FiHelpCircle className="absolute" />
-                                <h2 className="text-lg font-bold font-sans text-[#FEFEFF] mb-2">Help</h2>
-                                <p className="text-[#D7D3D0] font-sans">Support & Guidance</p>
-                            </div>
-                        </Link>
+                    <Accordion type="single" collapsible className="w-full">
+                        {kyc.map((kycDoc, index) => (
+                            <AccordionItem key={index} value={`kycDoc-${index}`}>
+                                <AccordionTrigger>
+                                    <h1 className='' key={kycDoc._id}>{kycDoc.userName}</h1>
+                                </AccordionTrigger>
+                                <AccordionContent >
+                                    <div>
+                                        <div className='text-start'>
+                                            <h1 className='text-2xl text-black' key={kycDoc._id}>📱 {kycDoc.mobNo}</h1>
+                                        </div>
+                                        <div className='grid grid-cols-2 gap-6 mt-4'>
 
-                    </div>
+                                            {/* <h1 className='text-lg text-black' key={kycDoc._id}>Aadhar Image</h1> */}
+                                            <img src={kycDoc.aadharImage} className='h-12 ' />
+                                            <img src={kycDoc.panImage} className='h-12 ' />
+                                            <img src={kycDoc.cancelledCheckImage} className='h-12 ' />
+                                        </div>
+                                        <Button className='w-full mt-4 ' onClick={() => handleApproveKyc(kycDoc._id)}>Approve KYC</Button>
+                                        <Button className='w-full mt-4  bg-red-500' onClick={() => handleRejectKyc(kycDoc._id)}>Reject KYC</Button>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
                     <footer className='mt-12'>
 
                         <h1 className='text-black font- mt-10 lg:mt-24'>  COPYRIGHT © GUDI GUDI | DESIGNED BY VIRATCS IT. ALL RIGHTS RESERVED</h1>
@@ -182,5 +173,5 @@ export default function Admin() {
                 </main>
             </div>
         </>
-    );
+    )
 }
