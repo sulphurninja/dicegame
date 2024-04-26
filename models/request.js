@@ -14,6 +14,10 @@ const requestSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    paymentProofUrl: {
+        type: String,
+        required: true,
+    },
 
 })
 

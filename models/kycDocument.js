@@ -21,6 +21,18 @@ const kycSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    bankingName: {
+        type: String,
+        required: true,
+    },
+    AccountNo: {
+        type: String,
+        required: true,
+    },
+    IFSCCode: {
+        type: String,
+        required: true,
+    },
     approved: {
         type: Boolean,
         default: false,

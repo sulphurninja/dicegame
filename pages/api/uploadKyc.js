@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     try {
         await client.connect();
         const db = client.db('test');
-        const { userName, aadharUrl, panUrl, cancelledCheckUrl, mobNo } = req.body;
+        const { userName, aadharUrl, panUrl, cancelledCheckUrl, mobNo, bankingName, AccountNo, IFSCCode } = req.body;
         const user = await Users.findOne({ userName }); // Use await since findOne returns a promise
 
         if (!user) {
@@ -24,6 +24,9 @@ export default async function handler(req, res) {
             panImage: panUrl,
             cancelledCheckImage: cancelledCheckUrl,
             mobNo,
+            bankingName,
+            AccountNo,
+            IFSCCode,
         });
 
         // Update user's kycSubmitted field to true

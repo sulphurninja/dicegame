@@ -9,10 +9,10 @@ export default async function handler(req, res) {
     await client.connect();
     const db = client.db('test');
     // const messagesCollection = db.collection('messages');
-    const { message, requestedAmount, userName } = req.body;
+    const { message, requestedAmount, userName, paymentProofUrl } = req.body;
 
     // Save the message and requested amount to the database
-    await Request.create({ message, requestedAmount, userName });
+    await Request.create({ message, requestedAmount, userName, paymentProofUrl });
 
     // Send a response indicating success
     res.status(200).json({ success: true, message: 'Request received successfully.' });

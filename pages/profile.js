@@ -124,6 +124,13 @@ export default function Profile() {
                     {/* <RequestBalance /> */}
 
                 </div>
+                <div className="bg-black -900 mx-12  mt-6 w-10/12 rounded-lg">
+                    <Link href='/Referrals'>
+                        <h1 className='p-3  text-white font-bold'>My Referrals</h1>
+                    </Link>
+                    {/* <RequestBalance /> */}
+
+                </div>
 
             </div>
 

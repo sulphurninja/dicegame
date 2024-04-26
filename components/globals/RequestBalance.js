@@ -3,9 +3,10 @@ import { Input } from '../ui/input'
 import { Button } from '../ui/button';
 import { DataContext } from '../../store/GlobalState';
 import { Accordion, AccordionContent, AccordionTrigger } from '../ui/accordion';
-import { Drawer, DrawerTrigger, DrawerHeader } from '../ui/drawer';
+import { Drawer, DrawerTrigger, DrawerHeader, DrawerContent, DrawerTitle, DrawerFooter, DrawerClose } from '../ui/drawer';
 import { AccordionItem } from '@radix-ui/react-accordion';
 import axios from 'axios'
+import { FiBarChart, FiEdit, FiZap, FiZoomOut } from 'react-icons/fi';
 
 export default function RequestBalance() {
     const [message, setMessage] = useState('');
@@ -17,6 +18,7 @@ export default function RequestBalance() {
     const [successMessage, setSuccessMessage] = useState('');
     const [successMessage2, setSuccessMessage2] = useState('');
     const [successMessage3, setSuccessMessage3] = useState('');
+    const [drawerOpen, setDrawerOpen] = useState(false); // State variable for drawer visibility
 
     const { state, dispatch } = useContext(DataContext);
     const { auth } = state;
@@ -24,9 +26,13 @@ export default function RequestBalance() {
     const [kycApproved, setKycApproved] = useState(auth && auth.user && auth.user.kycApproved);
     const [kycSubmitted, setKycSubmitted] = useState(auth && auth.user && auth.user.kycSubmitted);
     const [aadharUrl, setAadharUrl] = useState('');
+    const [paymentProofUrl, setPaymentProofUrl] = useState('');
     const [panUrl, setPanUrl] = useState('');
     const [cancelledCheckUrl, setCancelledCheckUrl] = useState('');
     const [mobNo, setMobNo] = useState('');
+    const [bankingName, setBankingName] = useState('');
+    const [AccountNo, setAccountNo] = useState('');
+    const [IFSCCode, setIFSCCode] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const [uploadSuccess, setUploadSuccess] = useState(false);
     const [uploadError, setUploadError] = useState('');
@@ -34,6 +40,12 @@ export default function RequestBalance() {
     const handleAadharUpload = (event) => {
         const file = event.target.files[0];
         uploadDocument(file, setAadharUrl);
+    };
+
+
+    const handlePaymentProofUpload = (event) => {
+        const file = event.target.files[0];
+        uploadDocument(file, setPaymentProofUrl);
     };
 
     const handlePanUpload = (event) => {
@@ -59,6 +71,7 @@ export default function RequestBalance() {
     console.log(aadharUrl, 'aadhar url')
     console.log(panUrl, 'pan url')
     console.log(cancelledCheckUrl, 'cancelledcheck url')
+    console.log(paymentProofUrl, 'payment url')
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -70,7 +83,7 @@ export default function RequestBalance() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ message, requestedAmount, userName }),
+                body: JSON.stringify({ message, requestedAmount, userName, paymentProofUrl }),
             });
 
             if (!response.ok) {
@@ -127,7 +140,7 @@ export default function RequestBalance() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ aadharUrl, panUrl, userName, mobNo, cancelledCheckUrl }),
+                body: JSON.stringify({ aadharUrl, panUrl, userName, mobNo, cancelledCheckUrl, bankingName, AccountNo, IFSCCode }),
             });
 
             if (!response.ok) {
@@ -136,10 +149,13 @@ export default function RequestBalance() {
             }
 
             setSuccessMessage3('KYC Submitted Successfully!');
+            setDrawerOpen(false)
             setMessage('');
             setRequestedAmount('');
         } catch (error) {
             setErrorMessage2(error.message);
+            setDrawerOpen(false);
+
         } finally {
             setIsLoading(false);
         }
@@ -169,100 +185,100 @@ export default function RequestBalance() {
 
 
     return (
-        <div className='text-white p  p-6'>
-            <Accordion type="single" collapsible className="w-full p-3 mt-4 rounded-xl bg-black">
+        <div className='text-white p   p-6'>
+            <Drawer className='' >
 
-                <AccordionItem value='item-1' >
-
-                    <AccordionTrigger >
-                        <div className=' '>
-                            <h1>Withdraw Balance</h1>
-                        </div>
-
-                    </AccordionTrigger>
-                    {kycApproved ? (
-                        <div>
-                            <p className='text-green-200'>Minimum Withdrawal Amt : 1000</p>
-
-                            <AccordionContent>
-
-                                <form className='' onSubmit={handleWithdraw}>
-                                    <div className=''>
-                                        <div className='flex gap-4'>
-                                            <label className='mt-2' htmlFor="requestedAmount"> Amount: </label>
-                                            <Input
-                                                type="number"
-                                                id="requestedAmount"
-                                                value={requestedAmount}
-                                                className='w-10/12 text-black'
-                                                onChange={(e) => setRequestedAmount(e.target.value)}
-                                            />
-                                        </div>
-                                        <div className='flex gap-4 mt-4'>
-
-                                            <label htmlFor="message">Message:</label>
-                                            <Input
-                                                type="text"
-                                                id="message"
-                                                value={message}
-                                                className='w-10/12 text-black'
-                                                onChange={(e) => setMessage(e.target.value)}
-                                            />
-                                        </div>
+                <DrawerTrigger asChild className='w-full'>
+                    <Button oclassName="flex items-center w-full  text-white py-2 px-2 rounded-md">
+                        <FiZap className="mr-1" />
+                        Withdraw
+                    </Button>
+                </DrawerTrigger>
+                {kycApproved ? (
+                    <div className=''>
+                        <DrawerContent>
+                            <DrawerHeader>
+                                <DrawerTitle>Edit User</DrawerTitle>
+                            </DrawerHeader>
+                            <form className='' onSubmit={handleWithdraw}>
+                                <div className=''>
+                                    <div className='flex gap-4'>
+                                        <label className='mt-2' htmlFor="requestedAmount"> Amount: </label>
+                                        <Input
+                                            type="number"
+                                            id="requestedAmount"
+                                            value={requestedAmount}
+                                            className='w-10/12 text-black'
+                                            onChange={(e) => setRequestedAmount(e.target.value)}
+                                        />
                                     </div>
+                                    <div className='flex gap-4 mt-4'>
 
-                                    <Button className='mt-4 text-white bg-gray-700 ' type="submit" disabled={isLoading}>
-                                        {isLoading ? 'Submitting...' : 'Submit Request'}
-                                    </Button>
-                                </form>
-                                {errorMessage2 && <p>Error: {errorMessage2}</p>}
-                                {successMessage2 && <p className='text-green-500'>{successMessage2}</p>}
+                                        <label htmlFor="message">Message:</label>
+                                        <Input
+                                            type="text"
+                                            id="message"
+                                            value={message}
+                                            className='w-10/12 text-black'
+                                            onChange={(e) => setMessage(e.target.value)}
+                                        />
+                                    </div>
+                                </div>
 
-                            </AccordionContent>
-                        </div>
-                    ) : (
-                        <div>
-                            <h1 className='text-green-200'>Complete your KYC to Withdraw</h1>
+                                <Button className='mt-4 text-white bg-gray-700 ' type="submit" disabled={isLoading}>
+                                    {isLoading ? 'Submitting...' : 'Submit Request'}
+                                </Button>
+                            </form>
+                            {errorMessage2 && <p>Error: {errorMessage2}</p>}
+                            {successMessage2 && <p className='text-green-500'>{successMessage2}</p>}
 
-                            <AccordionContent>
-                                <div className="grid  grid-cols-1 gap-12 lg:grid-cols-3  mt-4">
-                                    <div className='border rounded p-2'>
-                                        <div className='flex justify-between'>
-                                            <img src='/aadhar.png' className='h-12 rounded object-cover ' />
+
+                        </DrawerContent>
+
+                    </div>
+                ) : (
+                    <div className=''>
+                        <DrawerContent>
+                            <DrawerHeader>
+                                <DrawerTitle>Complete your KYC to Withdraw</DrawerTitle>
+                            </DrawerHeader>
+                            <div className="grid  overflow-scroll-y md:h-72 h-40 grid-cols-1 lg:grid-cols-1  mt-4">
+                                <div className='border rounded p-2' style={{ backgroundColor: aadharUrl ? '#34D399' : '' }}>
+                                    <label htmlFor="aadharInput" className='cursor-pointer'>
+                                        <div className='flex gap-10'>
+                                            <img src='/aadhar.png' className='h-8 rounded object-cover ' />
                                             <h1 className='mt-2 font-bold'>1. Upload Aadhar Card</h1>
-
                                             <h1 className='text-2xl'></h1>
                                         </div>
-                                        <input type="file" className='mt-1' accept="image/*" onChange={handleAadharUpload} />
+                                    </label>
+                                    <input id="aadharInput" type="file" className='hidden' accept="image/*" onChange={handleAadharUpload} />
 
 
-                                        {/* Add upload component for Aadhar Card */}
-                                    </div>
-                                    <div className='border rounded p-2'>
-                                        <div className='flex justify-between'>
-                                            <img src='/pan.webp' className='h-12 rounded object-cover ' />
+                                    {/* Add upload component for Aadhar Card */}
+                                </div>
+                                <div className='border rounded p-2' style={{ backgroundColor: panUrl ? '#34D399' : '' }}>
+                                    <label htmlFor="panInput" className='cursor-pointer'>
+                                        <div className='flex gap-10'>
+                                            <img src='/pan.webp' className='h-8 rounded object-cover ' />
                                             <h1 className='mt-2 font-bold'>2. Upload PAN Card</h1>
                                             <h1 className='text-2xl'></h1>
                                         </div>
-                                        <input type="file" className='' accept="image/*" onChange={handlePanUpload} />
-
-                                        {/* Add upload component for PAN Card */}
-                                    </div>
-                                    <div className='border rounded p-2'>
-                                        <div className='flex justify-between'>
-                                            <img src='/cancel.webp' className='h-12 rounded object-cover ' />
-
+                                    </label>
+                                    <input id="panInput" type="file" className='hidden' accept="image/*" onChange={handlePanUpload} />
+                                    {/* Add upload component for PAN Card */}
+                                </div>
+                                <div className='border rounded p-2' style={{ backgroundColor: cancelledCheckUrl ? '#34D399' : '' }}>
+                                    <label htmlFor="cancelledCheckInput" className='cursor-pointer'>
+                                        <div className='flex  gap-8'>
+                                            <img src='/cancel.webp' className='h-8 rounded object-cover ' />
                                             <h1 className='mt-2 font-bold'>3. Upload Cancelled Check</h1>
                                         </div>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleCancelledCheckUpload}
-                                        />
-                                        {/* Add upload component for PAN Card */}
-                                    </div>
-
+                                    </label>
+                                    <input id="cancelledCheckInput" type="file" className='hidden' accept="image/*" onChange={handleCancelledCheckUpload} />
+                                    {/* Add upload component for Cancelled Check */}
                                 </div>
+                            </div>
+                            <div className='grid grid-cols-1 md:grid-cols-3 gap-2'>
                                 <div className='mt-2'>
                                     <div>
                                         <h1 className='mt-2 mb-2 font-bold'>📱 Enter Your Mob.No</h1>
@@ -270,19 +286,47 @@ export default function RequestBalance() {
                                     </div>
                                     {/* Add upload component for PAN Card */}
                                 </div>
-                                <Button type="submit" onClick={handleSubmitKyc} className='mt-2 w-full'>'Submit Documents</Button>
+                                <div className='mt-2'>
+                                    <div>
+                                        <h1 className='mt-2 mb-2 font-bold'>🏦 Enter Your Banking Name</h1>
+                                        <Input type='text' value={bankingName} onChange={(e) => setBankingName(e.target.value)} className='text-black' />
+                                    </div>
+                                    {/* Add upload component for PAN Card */}
+                                </div>
+                                <div className='mt-2'>
+                                    <div>
+                                        <h1 className='mt-2 mb-2 font-bold'>🏦 Enter Your Bank Account Number</h1>
+                                        <Input type='string' value={AccountNo} onChange={(e) => setAccountNo(e.target.value)} className='text-black' />
+                                    </div>
+                                    {/* Add upload component for PAN Card */}
+                                </div>
+                                <div className='mt-2'>
+                                    <div>
+                                        <h1 className='mt-2 mb-2 font-bold'>🏦 Enter Your IFSC Code</h1>
+                                        <Input type='text' value={IFSCCode} onChange={(e) => setIFSCCode(e.target.value)} className='text-black' />
+                                    </div>
+                                    {/* Add upload component for PAN Card */}
+                                </div>
+                            </div>
+                        {successMessage3 && <p className='text-center font-bold text-green-500'>{successMessage3}</p>}
 
-                            </AccordionContent>
-                            {/* Display upload status */}
-                            {isUploading && <p>Uploading...</p>}
-                            {uploadSuccess && <p>Upload successful!</p>}
-                            {uploadError && <p>Error: {uploadError}</p>}
-                            {errorMessage3 && <p>Error: {errorMessage3}</p>}
-                            {successMessage3 && <p className='text-green-500'>{successMessage3}</p>}
-                        </div>
-                    )}
-                </AccordionItem>
-            </Accordion>
+                            {/* <Button type="submit" className='mt-2 w-full'>'Submit Documents</Button> */}
+                            <DrawerFooter>
+                                <Button onClick={handleSubmitKyc} type="button">Submit Documents</Button>
+                                <DrawerClose onClick={() => setDrawerOpen(false)}>Close</DrawerClose>
+                            </DrawerFooter>
+                        </DrawerContent>
+
+                        {/* Display upload status */}
+                        {isUploading && <p>Uploading...</p>}
+                        {uploadSuccess && <p>Upload successful!</p>}
+                        {uploadError && <p>Error: {uploadError}</p>}
+                        {errorMessage3 && <p>Error: {errorMessage3}</p>}
+
+                    </div>
+                )}
+
+            </Drawer>
             <Accordion type="single" collapsible className="w-full p-3 mt-4 rounded-xl bg-black">
                 <AccordionItem value='item-1' >
                     <AccordionTrigger >
@@ -303,6 +347,7 @@ export default function RequestBalance() {
                                         onChange={(e) => setRequestedAmount(e.target.value)}
                                     />
                                 </div>
+
                                 <div className='flex gap-4 mt-4'>
 
                                     <label htmlFor="message">Message:</label>
@@ -313,6 +358,19 @@ export default function RequestBalance() {
                                         className='w-10/12 text-black'
                                         onChange={(e) => setMessage(e.target.value)}
                                     />
+                                </div>
+                                <div className='flex gap-4 mt-4'>
+
+                                    <label htmlFor="message">Payment Proof:</label>
+
+                                    <Input
+                                        type="file"
+                                        className='w-56 text-black'
+                                        accept="image/*"
+                                        onChange={handlePaymentProofUpload}
+                                    />
+                                    {isUploading && <p>Uploading...</p>}
+
                                 </div>
                             </div>
 

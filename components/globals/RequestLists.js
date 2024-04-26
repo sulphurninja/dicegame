@@ -48,7 +48,15 @@ const RequestsList = () => {
                             <h1 className='text-start text-lg font-bold'>
                                 🪙 {request.requestedAmount}
                             </h1>
-                            <Button onClick={() => toggleApproval(request._id)}>
+                            <h1 className='text-lg font-bold'>
+                                Payment Proof:
+                            </h1>
+                            <div className='flex justify-center'>
+                            <img src={request.paymentProofUrl} className='h-1/2 w-1/2 ' />
+
+                            </div>
+                            
+                            <Button className='mt-4' onClick={() => toggleApproval(request._id)}>
                                 {request.approved ? 'Revoke Approval' : 'Approve'}
                             </Button>
                         </AccordionContent>
