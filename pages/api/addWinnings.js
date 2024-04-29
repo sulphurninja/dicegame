@@ -38,7 +38,7 @@ export default async function handler(req, res) {
             if (parentUser) {
                 parentUser.referralWinnings += parentWinnings;
                 parentUser.balance += parentWinnings;
-                parentUser.winHistory.push({ from: user.userName, amount: parentWinnings });
+                parentUser.winHistory.push({ from: user.userName, amount: parentWinnings, timestamp: new Date() }); // Add timestamp
             }
         });
 

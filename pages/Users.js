@@ -15,6 +15,8 @@ export default function Users() {
     const [role, setRole] = useState('');
     const [balance, setBalance] = useState(0);
     const [drawerOpen, setDrawerOpen] = useState(false); // State variable for drawer visibility
+    const [password, setPassword] = useState('');
+
 
     useEffect(() => {
         async function fetchUsers() {
@@ -45,7 +47,8 @@ export default function Users() {
             const { data } = await axios.put(`/api/userlist?id=${editUser._id}`, {
                 userName,
                 role,
-                balance
+                balance,
+                password // Include the password field
             });
             console.log(data);
             setUsers(
@@ -172,6 +175,10 @@ export default function Users() {
                                                 <label>
                                                     Balance:
                                                     <Input type="number" value={balance} onChange={(e) => setBalance(e.target.value)} />
+                                                </label>
+                                                <label>
+                                                   Update Password:
+                                                    <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                                                 </label>
                                                 <DrawerFooter>
                                                     <Button type="button" onClick={handleUpdateUser}>Update</Button>

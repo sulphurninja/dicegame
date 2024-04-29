@@ -45,6 +45,10 @@ const userSchema = new mongoose.Schema({
         amount: {
             type: Number,
             required: true
+        },
+        timestamp: {
+            type: Date, // Add timestamp field
+            default: Date.now // Default to current date and time
         }
     }],
     kycApproved: {

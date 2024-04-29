@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "../components/ui/card"
 import Link from 'next/link'
+import { FloatingWhatsApp } from 'react-floating-whatsapp'
 
 const inter = DM_Sans({ subsets: ["latin"] });
 
@@ -19,7 +20,7 @@ export default function Home() {
   
   return (
     <main
-      className={` h-screen   bg-[#400D56]  ${inter.className}`}
+      className={` h-screen overflow-hidden  bg-[#400D56]  ${inter.className}`}
     >
       <Navbar />
 
@@ -38,8 +39,8 @@ export default function Home() {
             </span>
           </Link>
         </Button>
-
       </div>
+      
       <div className="md:mt-12">
         <h1 className="ml-4 text-white">Explore</h1>
         <div className="mx-4  grid grid-cols-1 md:grid-cols-2 gap-4 md:justify-start md:mt-4 mt-4">
@@ -63,14 +64,19 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <div className="">
+
+      </div>
+      
       <nav className="fixed bottom-0 left-0 w-full bg-[#] text-white flex justify-center">
-        <ul className="flex justify-around w-full max-w-screen-lg py-4">
+        <ul className="flex space-x-8 lg:justify-around w-full max-w-screen-lg py-2">
           <Link href='/home'>
             <li className={`px-4 items-center  ${inter.className} `}>
               <Dice6 className='text-white ml-2' />
               <h1 className="text-center">Game</h1>
             </li>
           </Link>
+          
           <Link href='/refer'>
             <li className={`px-4 items-center  ${inter.className} `}>
               <Users className='text-white ml-2' />
@@ -84,6 +90,8 @@ export default function Home() {
             </li>
           </Link>
           {/* Add more navigation items as needed */}
+      <FloatingWhatsApp avatar="/win.gif"  phoneNumber="+919272180074"  accountName="Gudgudi"  />
+
         </ul>
       </nav>
 

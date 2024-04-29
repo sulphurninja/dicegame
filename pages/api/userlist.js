@@ -1,5 +1,6 @@
 import { MongoClient } from 'mongodb';
 import { ObjectId } from 'mongodb';
+import bcrypt from 'bcrypt';
 
 const uri = process.env.MONGODB_URL;
 
@@ -18,11 +19,25 @@ export default async function handler(req, res) {
                 break;
             case 'PUT':
                 const { id } = req.query;
-                const { userName, role, balance } = req.body;
-                await collection.updateOne(
-                    { _id: new ObjectId(id) },
-                    { $set: { userName: userName, role: role, balance: balance } }
-                );
+                const { userName, role, balance, password } = req.body;
+
+                // Check if password is provided
+                if (password) {
+                    // Hash the provided password
+                    const hashedPassword = await bcrypt.hash(password, 10);
+                    // Update user document with the new password
+                    await collection.updateOne(
+                        { _id: new ObjectId(id) },
+                        { $set: { userName, role, balance, password: hashedPassword } }
+                    );
+                } else {
+                    // Update user document without changing the password
+                    await collection.updateOne(
+                        { _id: new ObjectId(id) },
+                        { $set: { userName, role, balance } }
+                    );
+                }
+
                 res.status(200).json({ message: 'User updated successfully' });
                 break;
             case 'DELETE':

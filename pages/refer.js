@@ -116,16 +116,30 @@ export default function Refer() {
                 </div>
                 {copied && <p className="text-sm text-green-500 mt-2">Referral code copied!</p>}
             </div>
-            <div className="mt-12 bg-white mx-4 rounded-xl md:h-36 h-36 overflow-y-scroll text-black flex justify-center text-center">
+            <div className="mt-12 bg-white mx-4 rounded-xl  text-black flex justify-center text-center">
                 <div className="bg-white justify-start rounded-full">
                     <p className="text-2xl leading-relaxed">Referral Winnings:</p>
-                    <div>
+                    <div className="h-48 w-80 rounded-lg overflow-y-scroll ">
                         {winHistory && winHistory.length > 0 ? (
                             <div className="">
                                 {winHistory.map((entry, index) => (
-                                    <div className="text-white p-3 w-full bg-black flex justify-between" key={index}>
-                                        <h1>{`${index + 1}. ${entry.from}`}</h1>
-                                        <h1 className="text-amber-300 font-bold">{`🪙 ${entry.amount}`}</h1>
+                                    <div className="">
+                                        <div className="text-white p-3 w-full bg-black " key={index}>
+                                            <div className="flex justify-between">
+                                                <h1>{`${index + 1}. ${entry.from}`}</h1>
+                                                <h1 className="text-amber-300 font-bold">{`🪙 ${entry.amount}`}</h1>
+                                            </div>
+                                            <p className="text-end text-xs mt-2">Credited at: {new Date(entry.timestamp).toLocaleString('en-US', {
+                                                day: '2-digit',
+                                                month: '2-digit',
+                                                year: 'numeric',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })}</p>
+                                        </div>
+
+
+
                                     </div>
                                 ))}
                             </div>

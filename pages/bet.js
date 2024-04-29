@@ -329,6 +329,21 @@ export default function Bet() {
         setShowWinningModal(false);
     }
 
+    useEffect(() => {
+        const confirmationMessage = "Refreshing this page will result in losing your game and bets data. Are you sure you want to Refresh?";
+        const handleBeforeUnload = (event) => {
+            event.preventDefault();
+            event.returnValue = confirmationMessage;
+            return confirmationMessage;
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+
+        return () => {
+            window.removeEventListener("beforeunload", handleBeforeUnload);
+        };
+    }, []);
+
 
 
     return (

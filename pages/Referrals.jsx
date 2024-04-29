@@ -56,7 +56,7 @@ export default function Referrals() {
                 // setLoading(false);
             }
         };
-
+        console.log(referrals, 'refsss')
         fetchReferrals();
 
         // Cleanup function to cancel any ongoing requests if component unmounts
@@ -82,12 +82,13 @@ export default function Referrals() {
                     referrals.data.map((user, index) => (
                         <AccordionItem className='bg-white p-2 rounded-md' key={index} value={`user-${index}`}>
                             <AccordionTrigger>
-                               {index +1}. <h1 className="font-bold">  {user.name}</h1>
+                                {index + 1}. <h1 className="font-bold text-black">  {user.name}</h1>
                             </AccordionTrigger>
                             <AccordionContent>
-                                <div className="">
+                                <div className="font-bold">
                                     <p>Username: {user.userName}</p>
-                                    <p>Referral Winnings: {user.referralWinnings}</p>
+                                    <p>Amount Credited : 🪙 {user.amountWon}</p>
+
                                     {/* Add more user information as needed */}
                                 </div>
                             </AccordionContent>

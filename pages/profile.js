@@ -101,6 +101,9 @@ export default function Profile() {
                                             </div>
                                             <div className="flex-1 p-4">
                                                 <p>Placed At: {new Date(bet.createdAt).toLocaleString('en-US', {
+                                                    month: 'numeric',
+                                                    day: 'numeric',
+                                                    year: 'numeric',
                                                     hour: 'numeric',
                                                     minute: 'numeric',
                                                     hour12: true
