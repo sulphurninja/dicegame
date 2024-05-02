@@ -28,11 +28,6 @@ const login = async (req, res) => {
             return res.status(400).json({ err: 'Your account has been deactivated. Please contact support for assistance.' })
         }
 
-        const isMatch = await bcrypt.compare(password, user.password)
-        if (!isMatch) {
-            return res.status(400).json({ err: 'Incorrect Password, Check again!' })
-        }
-
         const access_token = createAccessToken({ id: user._id })
         const refresh_token = createRefreshToken({ id: user._id })
 
