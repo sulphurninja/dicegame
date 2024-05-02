@@ -55,8 +55,9 @@ export default function Login() {
         } else if (res.user && res.user.role === 'user') {
             router.push("/home"); // Redirect to home page or any other page
             toast("🙏 Welcome", { userName });
-        } else {
-            toast("❌ Something went wrong, please check your username and password!");
+        } else if(res.err === 'Your account has been deactivated. Please contact support for assistance.') {
+           
+            toast.error("Your account has been deactivated. Please contact support for assistance");
         }
     }
 

@@ -17,7 +17,6 @@ export default function Users() {
     const [drawerOpen, setDrawerOpen] = useState(false); // State variable for drawer visibility
     const [password, setPassword] = useState('');
 
-
     useEffect(() => {
         async function fetchUsers() {
             const { data } = await axios.get('/api/userlist');
@@ -36,7 +35,12 @@ export default function Users() {
     const handleDelete = async (id) => {
         try {
             await axios.delete(`/api/userlist?id=${id}`);
-            setUsers(users.filter((user) => user._id !== id));
+            setUsers(users.map(user => {
+                if (user._id === id) {
+                    return { ...user, isDeleted: true }; // Mark the user as deleted
+                }
+                return user;
+            }));
         } catch (error) {
             console.error(error);
         }
@@ -66,13 +70,26 @@ export default function Users() {
         }
     };
 
+    const handleActivate = async (id) => {
+        try {
+            await axios.put(`/api/userlist?id=${id}`, { isDeleted: false });
+            setUsers(users.map(user => {
+                if (user._id === id) {
+                    return { ...user, isDeleted: false }; // Mark the user as active
+                }
+                return user;
+            }));
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
     return (
         <div className="flex min-h-screen text-center bg-gray-100">
             <aside className="w-16 md:w-20 lg:w-24 bg-[#1D1817] text-white" >
                 <nav className="flex flex-col items-center">
                     <div className="py-4">
                         <Link href='/admin'>
-
                             <button className="text-2xl  text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
                                 <FiHome className="lg:ml-1" />
                                 <span className="hidden text-sm font-bold text-center md:inline">Home</span>
@@ -87,7 +104,6 @@ export default function Users() {
                             </button>
                         </Link>
                     </div>
-
                     <div className="py-4">
                         <Link href='/Requests'>
                             <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
@@ -118,21 +134,12 @@ export default function Users() {
                             <span className="hidden text-sm font-bold md:inline">Settings</span>
                         </button>
                     </div>
-                    {/* <div className="py-4">
-                            <Link href='/Attendance'>
-                                <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
-                                    <FiCalendar className="lg:ml-4" />
-                                    <span className="hidden text-sm font-bold md:inline">Calendar</span>
-                                </button>
-                            </Link>
-                        </div> */}
                     <div className="py-4">
                         <button className="text-2xl text-gray-300 hover:text-[#F56565] transition duration-300 ease-in-out">
                             <FiHelpCircle className="lg:ml-1" />
                             <span className="hidden text-sm font-bold md:inline">Help</span>
                         </button>
                     </div>
-
                 </nav>
             </aside >
             <main className="flex-1 bg-neutral-300 p-6">
@@ -141,64 +148,68 @@ export default function Users() {
                     {users.map((user, index) => (
                         <AccordionItem key={index} value={`user-${index}`}>
                             <AccordionTrigger>
-                                <h1 className=''>{user.userName}</h1>
+                                <h1 className={user.isDeleted ? 'text-red-500' : ''}>{user.userName}</h1>
                             </AccordionTrigger>
                             <AccordionContent>
                                 <div className='text-start'>
                                     <p>Username: {user.userName}</p>
                                     <p>Role: {user.role}</p>
                                     <p>Balance: {user.balance}</p>
+                                    <p>Password: {user.password}</p>
                                 </div>
                                 <div className="flex justify-between items-center mt-2">
-                                    <Drawer >
+                                    {user.isDeleted ? (
+                                        <Button onClick={() => handleActivate(user._id)} className="flex items-center bg-green-500 hover:bg-green-800 text-white py-1 px-2 rounded-md">
+                                            Activate
+                                        </Button>
+                                    ) : (
+                                        <Drawer >
+                                            <DrawerTrigger asChild>
+                                                <Button onClick={() => handleEdit(user)} className="flex items-center  text-white py-1 px-2 rounded-md">
+                                                    <FiEdit className="mr-1" />
+                                                    Edit
+                                                </Button>
+                                            </DrawerTrigger>
+                                            <DrawerContent>
+                                                <DrawerHeader>
+                                                    <DrawerTitle>Edit User</DrawerTitle>
+                                                </DrawerHeader>
+                                                <form className='p-12'>
+                                                    <label className=''>
+                                                        Username:
+                                                    </label>
+                                                    <Input type="text" className='' value={userName} onChange={(e) => setName(e.target.value)} />
 
-                                        <DrawerTrigger asChild>
-                                            <Button onClick={() => handleEdit(user)} className="flex items-center  text-white py-1 px-2 rounded-md">
-                                                <FiEdit className="mr-1" />
-                                                Edit
-                                            </Button>
-                                        </DrawerTrigger>
-                                        <DrawerContent>
-                                            <DrawerHeader>
-                                                <DrawerTitle>Edit User</DrawerTitle>
-                                            </DrawerHeader>
-                                            <form className='p-12'>
-                                                <label className=''>
-                                                    Username:
-                                                </label>
-                                                <Input type="text" className='' value={userName} onChange={(e) => setName(e.target.value)} />
+                                                    <label>
+                                                        Role:
+                                                        <Input type="text" value={role} onChange={(e) => setRole(e.target.value)} />
+                                                    </label>
+                                                    <label>
+                                                        Balance:
+                                                        <Input type="number" value={balance} onChange={(e) => setBalance(e.target.value)} />
+                                                    </label>
+                                                    <label>
+                                                        Update Password:
+                                                        <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                                                    </label>
+                                                    <DrawerFooter>
+                                                        <Button type="button" onClick={handleUpdateUser}>Update</Button>
+                                                        <DrawerClose onClick={() => setDrawerOpen(false)}>Close</DrawerClose>
+                                                    </DrawerFooter>
+                                                </form>
+                                            </DrawerContent>
+                                        </Drawer>
 
-                                                <label>
-                                                    Role:
-                                                    <Input type="text" value={role} onChange={(e) => setRole(e.target.value)} />
-                                                </label>
-                                                <label>
-                                                    Balance:
-                                                    <Input type="number" value={balance} onChange={(e) => setBalance(e.target.value)} />
-                                                </label>
-                                                <label>
-                                                   Update Password:
-                                                    <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                                                </label>
-                                                <DrawerFooter>
-                                                    <Button type="button" onClick={handleUpdateUser}>Update</Button>
-                                                    <DrawerClose onClick={() => setDrawerOpen(false)}>Close</DrawerClose>
-                                                </DrawerFooter>
-                                            </form>
-                                        </DrawerContent>
-                                    </Drawer>
-
+                                    )}
                                     <Button onClick={() => handleDelete(user._id)} className="flex items-center bg-red-500 hover:bg-red-800 text-white py-1 px-2 rounded-md">
                                         <FiTrash2 className="mr-1" />
-                                        Delete
+                                        Deactivate
                                     </Button>
                                 </div>
                             </AccordionContent>
                         </AccordionItem>
                     ))}
                 </Accordion>
-
-
             </main>
         </div>
     )

@@ -4,6 +4,8 @@ import { useForm } from 'react-hook-form';
 import { DataContext } from '../store/GlobalState';
 import { useRouter } from 'next/router';
 import { postData } from '../utils/fetchData';
+import { toast } from 'sonner';
+import { Toaster } from '../components/ui/sonner';
 
 const inter = DM_Sans({ subsets: ['latin'] });
 
@@ -35,13 +37,14 @@ export default function Register() {
 
         const res = await postData('auth/register', userData)
         if (res.msg === 'Successful Registration!') {
-            await fetch('/api/generateUserJson', {
-                method: 'GET',
-            });
+            toast("Registration Successful")
             router.push('/login')
             // console.log('JSON files generated successfully.');
+        } else if (res.err === 'Username already exists!') {
+            toast.error('Username already exists');
+        } else if (res.err) {
+            toast.error('An error occurred. Please try again later.');
         }
-        setShowModal(true);
         console.log(res)
     }
     return (
@@ -82,6 +85,7 @@ export default function Register() {
                         <a href='/login' className='text-green-200 cursor-pointer'> Login Now!</a>
                     </p>
                 </form>
+                <Toaster />
             </div>
         </main>
     );

@@ -19,12 +19,16 @@ const generateReferralCode = () => {
 
 const register = async (req, res) => {
     try {
-        const { userName, password, role, name, balance, referralCode } = req.body
+        let { userName, password, role, name, balance, referralCode } = req.body
 
-        const passwordHash = await bcrypt.hash(password, 12)
+        // Trim extra spaces from the userName
+        userName = userName.trim();
 
-        const user = await Users.findOne({ userName })
-        if (user) return res.status(400).json({ err: 'You are already registered!' })
+        // Check if userName already exists (after trimming)
+        const user = await Users.findOne({ userName });
+        if (user) {
+            return res.status(400).json({ err: 'Username already exists!' });
+        }
 
         let parentUser = null;
 
@@ -39,7 +43,7 @@ const register = async (req, res) => {
 
         const newUser = new Users({
             userName,
-            password: passwordHash,
+            password,
             role,
             name,
             balance,
@@ -48,7 +52,6 @@ const register = async (req, res) => {
         });
 
         await newUser.save();
-
 
         res.json({ msg: "Successful Registration!", referralCode: newUser.referralCode });
     } catch (err) {

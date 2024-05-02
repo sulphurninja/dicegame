@@ -19,32 +19,48 @@ export default async function handler(req, res) {
                 break;
             case 'PUT':
                 const { id } = req.query;
-                const { userName, role, balance, password } = req.body;
+                const { userName, role, balance, password, isDeleted } = req.body;
 
-                // Check if password is provided
-                if (password) {
-                    // Hash the provided password
-                    const hashedPassword = await bcrypt.hash(password, 10);
-                    // Update user document with the new password
+                if (isDeleted !== undefined) {
+                    // Handle user activation and deactivation
                     await collection.updateOne(
                         { _id: new ObjectId(id) },
-                        { $set: { userName, role, balance, password: hashedPassword } }
+                        { $set: { isDeleted } }
                     );
+
+                    if (isDeleted === false) {
+                        res.status(200).json({ message: 'User activated successfully' });
+                    } else {
+                        res.status(200).json({ message: 'User deactivated successfully' });
+                    }
                 } else {
-                    // Update user document without changing the password
-                    await collection.updateOne(
-                        { _id: new ObjectId(id) },
-                        { $set: { userName, role, balance } }
-                    );
-                }
+                    // Handle user update with other fields
+                    if (password) {
+                        await collection.updateOne(
+                            { _id: new ObjectId(id) },
+                            { $set: { userName, role, balance, password } }
+                        );
+                    } else {
+                        await collection.updateOne(
+                            { _id: new ObjectId(id) },
+                            { $set: { userName, role, balance } }
+                        );
+                    }
 
-                res.status(200).json({ message: 'User updated successfully' });
+                    res.status(200).json({ message: 'User updated successfully' });
+                }
                 break;
+
+            // Inside the DELETE case in your API handler
             case 'DELETE':
                 const userId = req.query.id;
-                await collection.deleteOne({ _id: new ObjectId(userId) });
-                res.status(200).json({ message: 'User deleted successfully' });
+                await collection.updateOne(
+                    { _id: new ObjectId(userId) },
+                    { $set: { isDeleted: true } }
+                );
+                res.status(200).json({ message: 'User soft deleted successfully' });
                 break;
+
             default:
                 res.setHeader('Allow', ['GET', 'PUT', 'DELETE']);
                 res.status(405).end(`Method ${req.method} Not Allowed`);

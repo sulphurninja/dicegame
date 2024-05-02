@@ -17,12 +17,21 @@ const login = async (req, res) => {
     try {
         const { userName, password } = req.body
 
-        const passwordHash = await bcrypt.hash(password, 12)
-
         const user = await Users.findOne({ userName })
-        if (!user) return res.status(400).json({ err: 'You are not registerd!' })
+
+        if (!user) {
+            return res.status(400).json({ err: 'You are not registered!' })
+        }
+
+        // Check if the user is deactivated
+        if (user.isDeleted) {
+            return res.status(400).json({ err: 'Your account has been deactivated. Please contact support for assistance.' })
+        }
+
         const isMatch = await bcrypt.compare(password, user.password)
-        if (!isMatch) return res.status(400).json({ err: 'Incorrect Password, Check again!' })
+        if (!isMatch) {
+            return res.status(400).json({ err: 'Incorrect Password, Check again!' })
+        }
 
         const access_token = createAccessToken({ id: user._id })
         const refresh_token = createRefreshToken({ id: user._id })

@@ -4,7 +4,7 @@ const userSchema = new mongoose.Schema({
     userName: {
         type: String,
         required: true,
-        unique:true,
+        unique: true,
     },
     balance: {
         type: Number,
@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
     referralWinnings: {
         type: Number,
         default: 0
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false,
     },
     parent: {
         type: mongoose.Schema.Types.ObjectId,
