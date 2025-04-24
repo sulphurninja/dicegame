@@ -29,7 +29,7 @@ export default function Bet() {
     const [time, setTime] = useState(new Date());
     const [balance, setBalance] = useState(0);
     const [bets, setBets] = useState({}); // State to track bets placed on each number
-    const [selectedNumber, setSelectedNumber] = useState(null); // State to track the selected number   
+    const [selectedNumber, setSelectedNumber] = useState(null); // State to track the selected number
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -67,9 +67,10 @@ export default function Bet() {
     const nextToDrawHours = nextToDraw.getHours();
     const nextToDrawMinutes = nextToDraw.getMinutes();
     const nextToDrawMeridian = nextToDrawHours >= 12 ? 'PM' : 'AM';
-
+    const [betsPlaced, setBetsPlaced] = useState(false);
     const formattedNextToDrawHours = String(nextToDrawHours % 12).padStart(2, '0');
     const drawTime = `${formattedNextToDrawHours}:${nextToDrawMinutes.toString().padStart(2, '0')} ${nextToDrawMeridian}`;
+    const [soundPlayed, setSoundPlayed] = useState(false);
 
     // console.log(drawTime, 'draw time',)
     const buttonClickSound3 = new Howl({
@@ -93,19 +94,66 @@ export default function Bet() {
     const failSound = new Howl({
         src: ['/fail.mp3'],
     });
+    // Initialize sounds only once
+    useEffect(() => {
+        buttonClickSound3Ref.current = new Howl({
+            src: ['/select.mp3'],
+        });
+
+        buttonClickSoundRef.current = new Howl({
+            src: ['/clear.mp3'],
+        });
+
+        diceSoundRef.current = new Howl({
+            src: ['/dice.mp3'],
+        });
+
+        placeSoundRef.current = new Howl({
+            src: ['/place.mp3'],
+        });
+
+        winSoundRef.current = new Howl({
+            src: ['/win.mp3'],
+        });
+
+        failSoundRef.current = new Howl({
+            src: ['/fail.mp3'],
+        });
+    }, []);
 
 
+
+    // Update the useEffect for dice rolling to use the ref
     useEffect(() => {
         if (timeToDraw === "00") {
             diceRef.current.rollDice();
             addWinnings();
-            diceSound.play();
+            diceSoundRef.current.play();
         } else if (timeToDraw === "58") {
             setShowWinningModal(true);
         }
     }, [timeToDraw]);
 
-    const [soundPlayed, setSoundPlayed] = useState(false);
+    // Update the useEffect for winning/losing sound
+    useEffect(() => {
+        if (showWinningModal && !soundPlayed) {
+            if (winningAmount === 0) {
+                failSoundRef.current.play();
+            } else if (winningAmount > 0) {
+                winSoundRef.current.play();
+            }
+            setSoundPlayed(true);
+        }
+    }, [showWinningModal, soundPlayed, winningAmount]);
+
+    // Reset betsPlaced when the timer resets
+    useEffect(() => {
+        if (timeToDraw === "55") {
+            setBetsPlaced(false);
+            setPushedBets([]);
+        }
+    }, [timeToDraw]);
+
 
     useEffect(() => {
         if (showWinningModal && !soundPlayed) {
@@ -151,6 +199,10 @@ export default function Bet() {
     }
 
     const handleNumberClick = (number) => {
+        if (betsPlaced) {
+            toast("⚠️ Bets already placed for this round!");
+            return;
+        }
         setNumberBets({ ...numberBets, [number]: (numberBets[number] || 0) + selectedAmount })
         setTotalAmount(totalAmount + selectedAmount)
     }
@@ -208,8 +260,9 @@ export default function Bet() {
 
     // console.log(numberBets, 'numberbets')
 
+    // Update the handlePlaceBets function
     const handlePlaceBets = async () => {
-        if (totalAmount === 0) {
+        if (totalAmount === 0 || betsPlaced) {
             return;
         } else {
             try {
@@ -231,13 +284,13 @@ export default function Bet() {
                         setWinningAmounts(prevWinningAmounts => [...prevWinningAmounts, response.data.winningAmount]);
                         // Store winning amount in array
                         console.log('WINNING AMOUNT', response.data.winningAmount);
-                        clearBets();
-                        setPushedBets(prevPushedBets => [...prevPushedBets, numberBets]);
+                        setPushedBets([numberBets]); // Set pushed bets directly, not appending
                         // Update pushed bets as an array
                         toast("✅ Bet Placed successfully!");
                         // Update success message
-                        setPushedBetsArray(prev => [...prev, pushedBets]);
+                        setPushedBetsArray([...pushedBetsArray, numberBets]);
                         // Add the newly pushed bets to the array
+                        setBetsPlaced(true); // Set betsPlaced to true after placing a bet
                     }
                     console.log('Bets published successfully!');
                     clearBets();
@@ -249,6 +302,13 @@ export default function Bet() {
         }
     };
 
+    // Fix for sound playing issue - create refs for sounds instead of recreating them
+    const buttonClickSound3Ref = useRef(null);
+    const buttonClickSoundRef = useRef(null);
+    const diceSoundRef = useRef(null);
+    const placeSoundRef = useRef(null);
+    const winSoundRef = useRef(null);
+    const failSoundRef = useRef(null);
 
     // console.log('WINNING AMOUNT', winningAmount)
 
@@ -410,9 +470,8 @@ export default function Bet() {
                         {[1, 5, 10, 50, 100, 500].map(amount => (
                             <button
                                 key={amount}
-                                className={`rounded-full w-16 h-16 p-2 ${selectedAmount === amount ? 'bg-white' : 'bg-transparent'
-                                    }`}
-                                onClick={() => { buttonClickSound3.play(); handleAmountClick(amount) }}
+                                className={`rounded-full w-16 h-16 p-2 ${selectedAmount === amount ? 'bg-white' : 'bg-transparent'}`}
+                                onClick={() => { buttonClickSound3Ref.current.play(); handleAmountClick(amount) }}
                             >
                                 <img src={`/${amount}.png`} className="h-full w-full  rounded-full" alt={amount} />
                             </button>
@@ -484,10 +543,10 @@ export default function Bet() {
 
                         {/* <h1 className='text-xs font-bold  text-white'>Current Bet</h1> */}
 
-                        {pushedBets.map((bet, index) => (
-                            <div key={index} className='w-56 overflow-x-scroll'>
+                        {pushedBets.length > 0 ? (
+                            <div className='w-56 overflow-x-scroll'>
                                 <div className='text-white gap-4 justify-center flex'>
-                                    {Object.entries(bet).map(([number, amount]) => (
+                                    {Object.entries(pushedBets[0]).map(([number, amount]) => (
                                         <p className='text-xs gap-4 font-bold font-mono' key={number}>
                                             <div className='bg-white text-black h-6 w-8 mt-1 rounded-full'>
                                                 <span className='text-sm'>{number}</span>
@@ -500,14 +559,25 @@ export default function Bet() {
                                     ))}
                                 </div>
                             </div>
-                        ))}
-
+                        ) : (
+                            <p className='text-white text-xs mt-2'>No bets placed yet</p>
+                        )}
                     </div>
-                    <div onClick={() => { handlePlaceBets(); placeSound.play(); }} className='bg-green-200 z-10 text-white p-2 w-fit absolute ml-[82%] mt-20   rounded-lg'>
-                        <h1 className='text-black font-bold text-sm'>
-                            PLACE BET
-                        </h1>
 
+                    <div
+                        onClick={() => {
+                            if (!betsPlaced) {
+                                handlePlaceBets();
+                                placeSoundRef.current.play();
+                            } else {
+                                toast("⚠️ Bets already placed for this round!");
+                            }
+                        }}
+                        className={`${betsPlaced ? 'bg-gray-500' : 'bg-green-200'} z-10 text-white p-2 w-fit absolute ml-[82%] mt-20 rounded-lg`}
+                    >
+                        <h1 className='text-black font-bold text-sm'>
+                            {betsPlaced ? 'BET PLACED' : 'PLACE BET'}
+                        </h1>
                     </div>
                 </div>
             </main >
